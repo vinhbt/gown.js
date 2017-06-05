@@ -1,4 +1,6 @@
-var InputControl = require('./InputControl');
+var InputControl = require('./InputControl'),
+    KeyboardManager = require('../interaction/KeyboardManager');
+
 /**
  * A text entry control that allows users to enter and edit multiple lines of
  * uniformly-formatted text with the ability to scroll.
@@ -17,7 +19,7 @@ function TextArea(theme, skinName) {
     this.skinName = skinName || TextArea.SKIN_NAME;
     this._validStates = this._validStates || InputControl.stateNames;
 
-    InputControl.call(this, theme);
+    InputControl.call(this, theme, 'textarea');
 
     this._fromPos = new PIXI.Point(0, 0);
     this._toPos = new PIXI.Point(0, 0);
@@ -35,8 +37,12 @@ TextArea.SKIN_NAME = 'text_input';
 
 
 TextArea.prototype.updateSelectionBg = function() {
-    var start = this.selection[0],
-        end = this.selection[1];
+    if (!this.hasFocus) {
+        return;
+    }
+    var selection = KeyboardManager.wrapper.selection;
+    var start = selection[0],
+        end = selection[1];
     this.selectionBg.clear();
     if (start === end) {
         return;
@@ -46,8 +52,6 @@ TextArea.prototype.updateSelectionBg = function() {
     } else if (start > end) {
         this._drawSelectionBg(end, start);
     }
-    this.selectionBg.x = this.pixiText.x;
-    this.selectionBg.y = this.pixiText.y;
 };
 
 
