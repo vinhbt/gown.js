@@ -1,5 +1,6 @@
 var Skinable = require('../core/Skinable');
 
+var ThemeFont = require('../skin/ThemeFont');
 /**
  * The basic Button with 3 states (up, down and hover) and a label that is
  * centered on it
@@ -10,13 +11,14 @@ var Skinable = require('../core/Skinable');
  * @constructor
  */
 function Button(theme, skinName) {
-    Skinable.call(this, theme);
     this._validStates = this._validStates || Button.stateNames;
+    this.textStyle = this.textStyle || new ThemeFont();
+    Skinable.call(this, theme);
+    this.updateLabel = false; // label text changed
+
     this.skinName = skinName || Button.SKIN_NAME;
 
     this.handleEvent(Button.UP);
-
-    this.updateLabel = true; // label text changed
 
     this.on('touchstart', this.onDown, this);
     this.on('mousedown', this.onDown, this);
@@ -75,6 +77,7 @@ Button.HOVER = 'hover';
  */
 Button.OUT = 'out';
 
+Button.DISABLE = 'disable';
 /**
  * names of possible states for a button
  *
@@ -84,7 +87,7 @@ Button.OUT = 'out';
  * @type String
  */
 Button.stateNames = [
-    Button.DOWN, Button.HOVER, Button.UP
+    Button.UP, Button.DOWN, Button.HOVER, Button.DISABLE
 ];
 
 // triggered event name for button
@@ -119,11 +122,15 @@ Button.prototype.skinLoaded = function(skin) {
         skin.width = this.width;
     } else if (skin.minWidth) {
         this.width = skin.width = skin.minWidth;
+    } else { // trường hợp button không set width thì mặc định width = skin.width.
+        this.width = skin.width;
     }
     if (this.height) {
         skin.height = this.height;
     } else if (skin.minHeight) {
         this.height = skin.height = skin.minHeight;
+    } else { // trường hợp button không set width thì mặc định height = skin.height.
+        this.height = skin.height;
     }
 };
 
@@ -198,6 +205,18 @@ Button.prototype.updateDimensions = function() {
     }
 };
 
+Object.defineProperty(Button.prototype, 'enabled', {
+    get: function () {
+        return this._enabled;
+    },
+    set: function (is) {
+        this._enabled = this.interactive = is;
+
+        if (!is) this.currentState = Button.DISABLE;
+        else this.currentState = Button.UP;
+    }
+});
+
 /**
  * handle one of the mouse/touch events
  *
@@ -206,39 +225,40 @@ Button.prototype.updateDimensions = function() {
  */
 Button.prototype.handleEvent = function(type) {
     if (!this._enabled) {
-        return;
-    }
-    if (type === Button.DOWN) {
-        this.currentState = Button.DOWN;
-        // click / touch DOWN so the button is pressed and the pointer has to
-        // be over the Button
-        this._pressed = true;
-        this._over = true;
-    } else if (type === Button.UP) {
-        this._pressed = false;
+        this.currentState = Button.DISABLE;
+    } else {
+      if (type === Button.DOWN) {
+          this.currentState = Button.DOWN;
+          // click / touch DOWN so the button is pressed and the pointer has to
+          // be over the Button
+          this._pressed = true;
+          this._over = true;
+      } else if (type === Button.UP) {
+          this._pressed = false;
 
-        if (this._over) {
-            // the user taps or clicks the button
-            this.emit(Button.TRIGGERED, this);
-            if (this.theme.hoverSkin) {
-                this.currentState = Button.HOVER;
-            }
-        } else {
-            // user releases the mouse / touch outside of the button boundaries
-            this.currentState = Button.UP;
-        }
-    } else if (type === Button.HOVER) {
-        this._over = true;
-        if (this._pressed) {
-            this.currentState = Button.DOWN;
-        } else if (this.theme.hoverSkin) {
-            this.currentState = Button.HOVER;
-        }
-    } else  { // type === rollout and default
-        if (this._over) {
-            this._over = false;
-        }
-        this.currentState = Button.UP;
+          if (this._over) {
+              // the user taps or clicks the button
+              this.emit(Button.TRIGGERED, this);
+              if (this.theme.hoverSkin) {
+                  this.currentState = Button.HOVER;
+              }
+          } else {
+              // user releases the mouse / touch outside of the button boundaries
+              this.currentState = Button.UP;
+          }
+      } else if (type === Button.HOVER) {
+          this._over = true;
+          if (this._pressed) {
+              this.currentState = Button.DOWN;
+          } else if (this.theme.hoverSkin) {
+              this.currentState = Button.HOVER;
+          }
+      } else  { // type === rollout and default
+          if (this._over) {
+              this._over = false;
+          }
+          this.currentState = Button.UP;
+      }
     }
 };
 
