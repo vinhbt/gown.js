@@ -12,10 +12,9 @@ var InputControl = require('./InputControl'),
  * @constructor
  */
 function TextInput(theme, skinName) {
+    this._validStates = this._validStates || InputControl.stateNames;
     // show and load background image as skin (exploiting skin states)
     this.skinName = skinName || TextInput.SKIN_NAME;
-    this._validStates = this._validStates || InputControl.stateNames;
-
     InputControl.call(this, theme, 'input');
 }
 
