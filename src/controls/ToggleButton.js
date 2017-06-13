@@ -21,6 +21,7 @@ function ToggleButton(theme, skinName) {
      * @type Boolean
      */
     this._selected = false;
+    this._skinFallback = 'up';
 }
 
 ToggleButton.prototype = Object.create( Button.prototype );
@@ -40,11 +41,14 @@ ToggleButton.SKIN_NAME = 'toggle_button';
 ToggleButton.SELECTED_UP = 'selected_up';
 ToggleButton.SELECTED_DOWN = 'selected_down';
 ToggleButton.SELECTED_HOVER = 'selected_hover';
+ToggleButton.SELECTED_DISABLE = 'selected_disable';
 
 ToggleButton.stateNames = Button.stateNames.concat([
     ToggleButton.SELECTED_UP,
     ToggleButton.SELECTED_DOWN,
-    ToggleButton.SELECTED_HOVER]);
+    ToggleButton.SELECTED_HOVER,
+    ToggleButton.SELECTED_DISABLE
+]);
 
 
 var originalCurrentState = Object.getOwnPropertyDescriptor(Button.prototype, 'currentState');
@@ -150,3 +154,4 @@ Object.defineProperty(ToggleButton.prototype, 'skinFallback', {
         this._skinFallback = value;
     }
 });
+
