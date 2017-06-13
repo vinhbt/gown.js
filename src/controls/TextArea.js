@@ -33,7 +33,7 @@ module.exports = TextArea;
 
 
 // name of skin
-TextArea.SKIN_NAME = 'text_input';
+TextArea.SKIN_NAME = 'text_area';
 
 
 TextArea.prototype.updateSelectionBg = function() {
