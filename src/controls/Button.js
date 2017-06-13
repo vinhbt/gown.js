@@ -14,6 +14,7 @@ function Button(theme, skinName) {
     this._validStates = this._validStates || Button.stateNames;
     this.textStyle = this.textStyle || new ThemeFont();
     Skinable.call(this, theme);
+    this._label = "";
     this.updateLabel = false; // label text changed
 
     this.skinName = skinName || Button.SKIN_NAME;
@@ -198,7 +199,7 @@ Button.prototype.updateDimensions = function() {
 
     if(this.labelText) {
         var scaleY = height / this._height;
-        var style = this._textStyle || this.theme.textStyle;
+        var style = this.textStyle || this.theme.textStyle;
         style.fontSize = style.fontSize * scaleY;
         this.labelText.style = style; // trigger setter
         this.updateLabelDimensions();
@@ -226,6 +227,11 @@ Object.defineProperty(Button.prototype, 'enabled', {
 Button.prototype.handleEvent = function(type) {
     if (!this._enabled) {
         this.currentState = Button.DISABLE;
+        if (type === Button.OUT){
+            if (this._over) {
+                this._over = false;
+            }
+        }
     } else {
       if (type === Button.DOWN) {
           this.currentState = Button.DOWN;
@@ -285,11 +291,11 @@ Button.prototype.redraw = function() {
 Button.prototype.createLabel = function() {
     if(this.labelText) {
         this.labelText.text = this._label;
-        this.labelText.style = this._textStyle || this.theme.textStyle.clone();
+        this.labelText.style = this.textStyle || this.theme.textStyle.clone();
     } else {
         this.labelText = new PIXI.Text(
             this._label,
-            this._textStyle || this.theme.textStyle.clone());
+            this.textStyle || this.theme.textStyle.clone());
         this.addChild(this.labelText);
     }
     this.updateLabelDimensions();
