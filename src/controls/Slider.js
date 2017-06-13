@@ -19,4 +19,4 @@ Slider.prototype = Object.create( Scrollable.prototype );
 Slider.prototype.constructor = Slider;
 module.exports = Slider;
 
-Slider.SKIN_NAME = 'scroll_bar';
+Slider.SKIN_NAME = 'slider';
