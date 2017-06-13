@@ -13,7 +13,8 @@ var mixin = require('../utils/mixin');
  */
 function Control() {
     PIXI.Container.call(this);
-    this.enabled = this.enabled !== false;
+    //this.enabled = this.enabled !== false;
+    this._enabled = true;
     // assume all controls are interactive
     this.interactive = true;
 
@@ -81,6 +82,7 @@ Object.defineProperty(Control.prototype, 'enabled', {
     },
     set: function(value) {
         this._enabled = value;
+        this.interactive = value;
     }
 });
 
