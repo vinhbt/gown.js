@@ -288,6 +288,9 @@ Object.defineProperty(Scroller.prototype, 'viewPort', {
         if (this._viewPort === value) {
             return;
         }
+        if (this._viewPort){
+            this.removeChild(this.viewPort);
+        }
         this._viewPort = value;
         if (this._viewPort) {
             this.addChildAt(this._viewPort, 0);
