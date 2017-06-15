@@ -9,29 +9,37 @@ if (typeof PIXI === 'undefined') {
 
     var core = module.exports = require('./core');
     // basic shapes
-    core.shapes = {
-        Shape:          require('./shapes/Shape'),
-        Arrow:          require('./shapes/Arrow'),
-        Diamond:        require('./shapes/Diamond'),
-        Ellipse:        require('./shapes/Ellipse'),
-        Line:           require('./shapes/Line'),
-        Rect:           require('./shapes/Rect')
-    };
+    core.Shape =          require('./shapes/Shape');
+    core.Arrow =          require('./shapes/Arrow');
+    core.Diamond =        require('./shapes/Diamond');
+    core.Ellipse =        require('./shapes/Ellipse');
+    core.Line =           require('./shapes/Line');
+    core.Rect =           require('./shapes/Rect');
 
     // layouting
     core.utils = {
             itemDimensions:       require('./layout/utils/itemDimensions')
     };
 
-    core.layout = {
-        HorizontalLayout:     require('./layout/HorizontalLayout'),
-        Layout:               require('./layout/Layout'),
-        LayoutAlignment:      require('./layout/LayoutAlignment'),
-        TiledColumnsLayout:   require('./layout/TiledColumnsLayout'),
-        TiledLayout:          require('./layout/TiledLayout'),
-        TiledRowsLayout:      require('./layout/TiledRowsLayout'),
-        VerticalLayout:       require('./layout/VerticalLayout')
-    };
+    // core.layout = {
+    //     HorizontalLayout:     require('./layout/HorizontalLayout'),
+    //     Layout:               require('./layout/Layout'),
+    //     LayoutAlignment:      require('./layout/LayoutAlignment'),
+    //     TiledColumnsLayout:   require('./layout/TiledColumnsLayout'),
+    //     TiledLayout:          require('./layout/TiledLayout'),
+    //     TiledRowsLayout:      require('./layout/TiledRowsLayout'),
+    //     VerticalLayout:       require('./layout/VerticalLayout')
+    // };
+
+
+    core.HorizontalLayout =     require('./layout/HorizontalLayout');
+    core.Layout =               require('./layout/Layout');
+    core.LayoutAlignment =      require('./layout/LayoutAlignment');
+    core.TiledColumnsLayout =   require('./layout/TiledColumnsLayout');
+    core.TiledLayout =          require('./layout/TiledLayout');
+    core.TiledRowsLayout =      require('./layout/TiledRowsLayout');
+    core.VerticalLayout =       require('./layout/VerticalLayout');
+    core.ViewPortBounds =       require('./layout/ViewPortBounds');
 
     // controls
     core.Application =            require('./controls/Application');
@@ -54,6 +62,9 @@ if (typeof PIXI === 'undefined') {
     core.TextArea =               require('./controls/TextArea');
     core.ToggleButton =           require('./controls/ToggleButton');
     core.ToggleGroup =            require('./controls/ToggleGroup');
+    core.DropDownList =           require('./controls/DropDownList');
+    core.CheckBox =               require('./controls/CheckBox');
+    core.ScrollArea =             require('./controls/ScrollArea');
 
     // data
     core.ListCollection = require('./data/ListCollection');

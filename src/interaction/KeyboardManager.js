@@ -75,6 +75,11 @@ module.exports = KeyboardManager;
  * @private
  */
 KeyboardManager.prototype._keyDownEvent = function(event) {
+    if (GOWN.InputControl.currentInput) {
+        if (GOWN.InputControl.currentInput.hasFocus) {
+            GOWN.InputControl.currentInput.onKeyDown(event);
+        }
+    }
     this._keyEvent(event, 'keydown');
 };
 
@@ -85,6 +90,11 @@ KeyboardManager.prototype._keyDownEvent = function(event) {
  * @private
  */
 KeyboardManager.prototype._keyUpEvent = function(event) {
+    if (GOWN.InputControl.currentInput) {
+        if (GOWN.InputControl.currentInput.hasFocus) {
+            GOWN.InputControl.currentInput.onKeyUp(event);
+        }
+    }
     this._keyEvent(event, 'keyup');
 };
 

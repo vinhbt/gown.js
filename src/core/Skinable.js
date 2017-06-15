@@ -53,6 +53,14 @@ Skinable.prototype.setTheme = function(theme) {
 };
 
 /**
+* get the theme
+*
+* @method theme
+*/
+Skinable.prototype.getTheme = function() {
+    return theme;
+};
+/**
  * overwrite data from theme for this specific component.
  * (usable if you want to change e.g. background color based on selected items)
  */

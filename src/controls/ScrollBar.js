@@ -68,12 +68,12 @@ ScrollBar.prototype.redraw = function() {
 ScrollBar.prototype.thumbMoved = function(x, y) {
     if (this.container && this.container.viewPort) {
         if (this._direction === Scrollable.HORIZONTAL) {
-            this.container._scrollContent(
+            this.container.scrollToPosition(
                 -(this.container.viewPort.width - this.container.width) *
                     (x / (this.container.width - this.thumb.width)),
                 0);
         } else if (this._direction === Scrollable.VERTICAL) {
-            this.container._scrollContent(
+            this.container.scrollToPosition(
                 0,
                 -(this.container.viewPort.height - this.container.height) *
                     (y / (this.container.height - this.thumb.height)));
@@ -97,6 +97,24 @@ Object.defineProperty(ScrollBar.prototype, 'direction', {
         this.invalid = true;
     }
 });
+
+
+/**
+ * container of the scrollbar
+ *
+ * @property value
+ * @type Number
+ */
+Object.defineProperty(ScrollBar.prototype, 'container', {
+    get: function() {
+        return this._container;
+    },
+    set: function(container) {
+        this._container = container;
+        this.invalid = true;
+    }
+});
+
 
 /**
  * value of the scrollbar

@@ -18,12 +18,11 @@ function ScrollThumb(scrollable, theme, skinName) {
     if (theme.thumbSkin) {
         this._validStates = ScrollThumb.THUMB_STATES;
     }
-    if (theme.thumbWidth) {
-        this.width = theme.thumbWidth;
-    }
-    if (theme.thumbHeight) {
-        this.height = theme.thumbHeight;
-    }
+
+    this.width = theme.thumbWidth || 0;
+
+    this.height = theme.thumbHeight || 0;
+
     Button.call(this, theme, this.skinName);
     this.invalidTrack = true;
 
@@ -50,7 +49,8 @@ ScrollThumb.SKIN_NAME = 'scroll_thumb';
 ScrollThumb.THUMB_STATES = [
     'horizontal_up', 'vertical_up',
     'horizontal_down', 'vertical_down',
-    'horizontal_hover', 'vertical_hover'
+    'horizontal_hover', 'vertical_hover',
+    'horizontal_disable'
 ];
 
 var originalCurrentState = Object.getOwnPropertyDescriptor(Button.prototype, 'currentState');
@@ -101,8 +101,8 @@ ScrollThumb.prototype.showTrack = function(skin) {
         this.addChild(skin);
         this.skin = skin;
     }
-    skin.x = Math.floor((this.width - skin.getBounds().width )/ 2);
-    skin.y = Math.floor((this.height - skin.getBounds().height )/ 2);
+    //skin.x = Math.floor((this.width - skin.getBounds().width )/ 2);
+    //skin.y = Math.floor((this.height - skin.getBounds().height )/ 2);
     this.invalidTrack = false;
 };
 

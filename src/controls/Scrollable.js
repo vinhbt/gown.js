@@ -320,8 +320,10 @@ Scrollable.prototype.redraw = function() {
         if (this.skin) {
             if (this.direction === Scrollable.HORIZONTAL) {
                 this.skin.width = this.width;
+                this.thumb.y = this.skin.y + Math.floor((this.skin.height - this.thumb.height) / 2 );
             } else {
                 this.skin.height = this.height;
+                this.thumb.x = this.skin.x + Math.floor((this.skin.width - this.thumb.width) / 2 );
             }
             this.invalidTrack = false;
         }

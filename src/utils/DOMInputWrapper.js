@@ -108,6 +108,7 @@ DOMInputWrapper.prototype.onBlur = function() {
     if (InputControl.currentInput) {
         InputControl.currentInput.onMouseUpOutside();
     }
+
 };
 
 DOMInputWrapper.prototype.onKeyUp = function(event) {
@@ -138,6 +139,7 @@ DOMInputWrapper.prototype.focus = function(tagName) {
     }
 };
 
+
 /**
  * deactivate the text input
  * blurs ALL hiddenInputs
@@ -167,8 +169,14 @@ Object.defineProperty(DOMInputWrapper.prototype, 'text',{
 });
 
 DOMInputWrapper.prototype.updateSelection = function(start, end) {
-    DOMInputWrapper.hiddenInput[this.tagName].selectionStart = start;
-    DOMInputWrapper.hiddenInput[this.tagName].selectionEnd = end;
+    if (DOMInputWrapper.hiddenInput[this.tagName].selectionStart !== start ||
+        DOMInputWrapper.hiddenInput[this.tagName].selectionEnd !== end) {
+        DOMInputWrapper.hiddenInput[this.tagName].selectionStart = start;
+        DOMInputWrapper.hiddenInput[this.tagName].selectionEnd = end;
+        return true;
+    } else{
+        return false;
+    }
 };
 
 Object.defineProperty(DOMInputWrapper.prototype, 'selection',{
@@ -181,39 +189,82 @@ Object.defineProperty(DOMInputWrapper.prototype, 'selection',{
 });
 
 /**
- * set cursor position of the hidden input
+ * The input text type
+ *
+ * @property type
+ * @type String
  */
-InputWrapper.setCursorPos = function (tagName, pos) {
-    if (InputWrapper.hiddenInput[tagName]) {
-        var elem = InputWrapper.hiddenInput[tagName];
-        if(elem.createTextRange) {
-            var range = elem.createTextRange();
-            range.move('character', pos);
-            range.select();
+Object.defineProperty(DOMInputWrapper.prototype, 'type',{
+    get: function() {
+        if (DOMInputWrapper.hiddenInput[this.tagName]) {
+            return DOMInputWrapper.hiddenInput[this.tagName].getAttribute('type');
         }
-        else {
-            if(elem.selectionStart) {
+        return 'text';
+    },
+    set: function(value) {
+        if (DOMInputWrapper.hiddenInput[this.tagName]) {
+            return DOMInputWrapper.hiddenInput[this.tagName].setAttribute('type', value);
+        }
+    }
+});
+
+
+/**
+ * cursor position of the hidden input
+ *
+ * @property cursorPos
+ * @type number
+ */
+Object.defineProperty(DOMInputWrapper.prototype, 'cursorPos',{
+    get: function() {
+        if (DOMInputWrapper.hiddenInput[this.tagName]) {
+            var elem = DOMInputWrapper.hiddenInput[this.tagName];
+            if (elem.selectionStart) {
+                return elem.selectionStart;
+            }else if (document.selection) {
+                // IE
                 elem.focus();
-                elem.setSelectionRange(pos, pos);
-            } else {
-                elem.focus();
+                var sel = document.selection.createRange();
+                var selLen = document.selection.createRange().text.length;
+                sel.moveStart('character', -elem.value.length);
+                return sel.text.length - selLen;
+            }
+        }
+        return 0;
+    },
+    set: function(value) {
+        if (DOMInputWrapper.hiddenInput[this.tagName]) {
+            var elem = DOMInputWrapper.hiddenInput[this.tagName];
+            if(elem.createTextRange) {
+                var range = elem.createTextRange();
+                range.move('character', value);
+                range.select();
+            }
+            else {
+                if(elem.selectionStart) {
+                    elem.focus();
+                    elem.setSelectionRange(value, value);
+                } else {
+                    elem.focus();
+                }
             }
         }
     }
-};
+});
 
 /**
  * set max. length setting it to 0 will allow unlimited text input
  * @param length
  */
-InputWrapper.setMaxLength = function(length) {
-    if (InputWrapper.hiddenInput) {
+DOMInputWrapper.prototype.maxChars = function(length) {
+    if (DOMInputWrapper.hiddenInput[this.tagName]) {
         if (!length || length < 0) {
-            InputWrapper.hiddenInput.removeAttribute('maxlength');
+            DOMInputWrapper.hiddenInput[this.tagName].removeAttribute('maxlength');
         } else {
-            InputWrapper.hiddenInput.setAttribute('maxlength', length);
+            DOMInputWrapper.hiddenInput[this.tagName].setAttribute('maxlength', length);
         }
-    } else {
-        InputWrapper._maxLength = length;
     }
 };
+
+
+
