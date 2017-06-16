@@ -22,6 +22,8 @@ function DOMInputWrapper(manager) {
     InputWrapper.call(this, manager, DOMInputWrapper.name);
 
     this.tagName = 'input';
+    this.selectionStart = 0;
+    this.cursorPos = 0;
 }
 DOMInputWrapper.prototype = Object.create( InputWrapper.prototype );
 DOMInputWrapper.prototype.constructor = DOMInputWrapper;
@@ -49,9 +51,10 @@ DOMInputWrapper.hiddenInput = {
 DOMInputWrapper.prototype.createInput = function(tagName) {
     if (!DOMInputWrapper.hiddenInput[tagName]) {
         var domInput = document.createElement(tagName);
-        //this.hideInput(domInput);
-        this.addEventListener(domInput);
+        domInput.setAttribute("type", "text");
         document.body.appendChild(domInput);
+        this.hideInput(domInput);
+        this.addEventListener(domInput);
         DOMInputWrapper.hiddenInput[tagName] = domInput;
     }
 };
@@ -108,7 +111,6 @@ DOMInputWrapper.prototype.onBlur = function() {
     if (InputControl.currentInput) {
         InputControl.currentInput.onMouseUpOutside();
     }
-
 };
 
 DOMInputWrapper.prototype.onKeyUp = function(event) {
@@ -116,6 +118,7 @@ DOMInputWrapper.prototype.onKeyUp = function(event) {
 };
 
 DOMInputWrapper.prototype.onKeyDown = function (event) {
+    console.log("DOMInputWrapper.prototype.onKeyDown:", this.text);
     this.manager._keyDownEvent(event);
 };
 
@@ -159,14 +162,17 @@ DOMInputWrapper.blur = function() {
 Object.defineProperty(DOMInputWrapper.prototype, 'text',{
     get: function() {
         var textProp = DOMInputWrapper.textProp;
+        console.log(DOMInputWrapper.hiddenInput[this.tagName]);
         var txt = DOMInputWrapper.hiddenInput[this.tagName][textProp];
         return txt.replace(/\r/g, '');
     },
     set: function(value) {
+        console.log("set text:" +  value);
         var textProp = DOMInputWrapper.textProp;
         DOMInputWrapper.hiddenInput[this.tagName][textProp] = value;
     }
 });
+
 
 DOMInputWrapper.prototype.updateSelection = function(start, end) {
     if (DOMInputWrapper.hiddenInput[this.tagName].selectionStart !== start ||
@@ -208,49 +214,6 @@ Object.defineProperty(DOMInputWrapper.prototype, 'type',{
     }
 });
 
-
-/**
- * cursor position of the hidden input
- *
- * @property cursorPos
- * @type number
- */
-Object.defineProperty(DOMInputWrapper.prototype, 'cursorPos',{
-    get: function() {
-        if (DOMInputWrapper.hiddenInput[this.tagName]) {
-            var elem = DOMInputWrapper.hiddenInput[this.tagName];
-            if (elem.selectionStart) {
-                return elem.selectionStart;
-            }else if (document.selection) {
-                // IE
-                elem.focus();
-                var sel = document.selection.createRange();
-                var selLen = document.selection.createRange().text.length;
-                sel.moveStart('character', -elem.value.length);
-                return sel.text.length - selLen;
-            }
-        }
-        return 0;
-    },
-    set: function(value) {
-        if (DOMInputWrapper.hiddenInput[this.tagName]) {
-            var elem = DOMInputWrapper.hiddenInput[this.tagName];
-            if(elem.createTextRange) {
-                var range = elem.createTextRange();
-                range.move('character', value);
-                range.select();
-            }
-            else {
-                if(elem.selectionStart) {
-                    elem.focus();
-                    elem.setSelectionRange(value, value);
-                } else {
-                    elem.focus();
-                }
-            }
-        }
-    }
-});
 
 /**
  * set max. length setting it to 0 will allow unlimited text input

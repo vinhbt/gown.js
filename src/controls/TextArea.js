@@ -144,8 +144,8 @@ Object.defineProperty(TextArea.prototype, 'style', {
     },
     set: function(style) {
         this.cursorStyle = style;
-        if (this.cursor) {
-            this.cursor.style = style;
+        if (this.cursorView) {
+            this.cursorView.style = style;
         }
         style = style.clone();
         style.wordWrap = true;
