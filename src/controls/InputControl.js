@@ -186,6 +186,7 @@ InputControl.prototype.onKeyDown = function () {
 
 InputControl.prototype.addEvents = function() {
     this.on('keyup', this.onInputChanged.bind(this));
+    this.on('keydown', this.onInputChanged.bind(this));
 };
 
 InputControl.prototype.onInputChanged = function () {
