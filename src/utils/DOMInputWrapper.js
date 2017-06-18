@@ -24,6 +24,7 @@ function DOMInputWrapper(manager) {
     this.tagName = 'input';
     this.selectionStart = 0;
     this.cursorPos = 0;
+    this._maxChars = 0;
 }
 DOMInputWrapper.prototype = Object.create( InputWrapper.prototype );
 DOMInputWrapper.prototype.constructor = DOMInputWrapper;
@@ -219,15 +220,21 @@ Object.defineProperty(DOMInputWrapper.prototype, 'type',{
  * set max. length setting it to 0 will allow unlimited text input
  * @param length
  */
-DOMInputWrapper.prototype.maxChars = function(length) {
-    if (DOMInputWrapper.hiddenInput[this.tagName]) {
-        if (!length || length < 0) {
-            DOMInputWrapper.hiddenInput[this.tagName].removeAttribute('maxlength');
-        } else {
-            DOMInputWrapper.hiddenInput[this.tagName].setAttribute('maxlength', length);
+Object.defineProperty(DOMInputWrapper.prototype, 'maxChars', {
+    get: function () {
+       return  this._maxChars;
+    },
+    set: function(value) {
+        if (this._maxChars !== value && DOMInputWrapper.hiddenInput[this.tagName]) {
+            this._maxChars = value;
+            if (!value || value < 0) {
+                DOMInputWrapper.hiddenInput[this.tagName].removeAttribute('maxlength');
+            } else {
+                DOMInputWrapper.hiddenInput[this.tagName].setAttribute('maxlength', value);
+            }
         }
     }
-};
+});
 
 
 
