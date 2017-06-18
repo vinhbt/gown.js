@@ -1,6 +1,7 @@
 var Skinable = require('../core/Skinable'),
     KeyboardManager = require('../interaction/KeyboardManager'),
-    InputWrapper = require('../utils/InputWrapper');
+    InputWrapper = require('../utils/InputWrapper'),
+    ThemeFont = require('../skin/ThemeFont');
 
 /**
  * InputControl used for TextInput, TextArea and everything else that
@@ -18,8 +19,10 @@ var Skinable = require('../core/Skinable'),
  * @memberof GOWN
  * @constructor
  */
-function InputControl(theme, type) {
+function InputControl(theme, settings) {
     Skinable.call(this, theme);
+
+    this.settings = settings || {type:'input'};
 
     this.receiveKeys = true;
 
@@ -27,17 +30,14 @@ function InputControl(theme, type) {
     // (to allow text selection, set to true if you like to have the
     //  InputControl as child of some element that can be moved)
     // thid does NOT effect text input
-    this.autoPreventInteraction = false;
+    this.autoPreventInteraction = this.settings.autoPreventInteraction || false;
 
-    this._inputType = 'text';
+    this.inputType = this.settings.inputType || 'text';
 
     // offset from the top-left corner in pixel to the skin
-    // TODO: put in theme!
-    this.textOffset = new PIXI.Point(5, 4);
+    this.textOffset = this.settings.textOffset || new PIXI.Point(10, 4);
 
-    this.text = this.text || '';
-
-    this.hasFocus = false;
+    this.hasFocus = this.settings.hasFocus || false;
 
     /**
      * indicates if the mouse button has been pressed
@@ -74,22 +74,25 @@ function InputControl(theme, type) {
      * @property blinkInterval
      * @type {number}
      */
-    this.blinkInterval = 500;
+    this.blinkInterval = this.settings.blinkInterval || 500;
 
-    this._restrict = '';
+    this._restrict = this.settings.restrict || '';
+
 
     // create dom element for DOMInputWrapper
     // (not needed if we run inside cordova/cocoon)
     if (KeyboardManager.wrapper.createInput) {
-        KeyboardManager.wrapper.createInput(type);
-        this.wrapperType = type;
+        KeyboardManager.wrapper.createInput(this.settings.type);
+        this.wrapperType = this.settings.type;
     }
 
+    this.maxChars = this.settings.maxChars || 0;
+    this.text = this.settings.text || '';
     // add events to listen to react to the Keyboard- and InteractionManager
     this.addEvents();
 
     //SD: set style for text input
-    this.cursorStyle = this.cursorStyle || new ThemeFont();
+    this.cursorStyle = this.settings.cursorStyle || this.cursorStyle || new ThemeFont();
 
     // cursor is the caret/selection sprite
     this.cursorView = new PIXI.Text('|', this.cursorStyle);
@@ -97,6 +100,7 @@ function InputControl(theme, type) {
         this.cursorView.y = this.pixiText.y;
     }
     this.addChild(this.cursorView);
+
 
     // selection background
     this.selectionBg = new PIXI.Graphics();
@@ -264,7 +268,7 @@ Object.defineProperty(InputControl.prototype, 'text', {
     set: function (text) {
         text += ''; // add '' to assure text is parsed as string
 
-        if (this.maxChars > 0 && text.length > this.maxChars) {
+        if (this._maxChars > 0 && text.length > this._maxChars) {
             return;
         }
 
@@ -294,18 +298,16 @@ Object.defineProperty(InputControl.prototype, 'maxChars', {
         return this._maxChars;
     },
     set: function (value) {
-        if (this._maxChars === value) {
-            return;
-        }
-        if (this.pixiText.text > value) {
+        this._maxChars = value;
+        if (this.pixiText && value && this.pixiText.text > value) {
             this.pixiText.text = this.pixiText.text.substring(0, value);
-            KeyboardManager.wrapper.maxChars = value;
             if (KeyboardManager.wrapper.cursorPos > value) {
                 KeyboardManager.wrapper.cursorPos = value;
                 this._cursorNeedsUpdate = true;
             }
         }
-        this._maxChars = value;
+        console.log("set maxChars" + value);
+        KeyboardManager.wrapper.maxChars = value;
     }
 });
 
@@ -367,6 +369,12 @@ InputControl.prototype.focus = function () {
     // set focus
     InputControl.currentInput = this;
     this.hasFocus = true;
+
+    // update the hidden input text, type, maxchars
+    KeyboardManager.wrapper.text = this.value;
+    KeyboardManager.wrapper.type = this.inputType;
+    console.log("onfocus set maxChars" + this._maxChars);
+    this.maxChars = this._maxChars;
 
     this.emit('focusIn', this);
 
@@ -489,11 +497,8 @@ InputControl.prototype.onDown = function (e) {
     this.on('mousemove', this.onMove, this);
     this.on('touchmove', this.onMove, this);
 
-    // update the hidden input text, type, maxchars and cursor position
-    KeyboardManager.wrapper.text = this.value;
+    // update cursor position
     KeyboardManager.wrapper.cursorPos = KeyboardManager.wrapper.selectionStart;
-    KeyboardManager.wrapper.type = this._inputType;
-    this.maxChars = this._maxChars;
     this.setCursorPos();
 
     return true;

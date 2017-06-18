@@ -19,7 +19,7 @@ function TextArea(theme, skinName) {
     this.skinName = skinName || TextArea.SKIN_NAME;
     this._validStates = this._validStates || InputControl.stateNames;
 
-    InputControl.call(this, theme, 'textarea');
+    InputControl.call(this, theme, {type: 'textarea'});
 
     this._fromPos = new PIXI.Point(0, 0);
     this._toPos = new PIXI.Point(0, 0);
