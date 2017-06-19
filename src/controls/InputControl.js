@@ -35,9 +35,18 @@ function InputControl(theme, settings) {
     this.inputType = this.settings.inputType || 'text';
 
     // offset from the top-left corner in pixel to the skin
-    this.textOffset = this.settings.textOffset || new PIXI.Point(10, 4);
+    this.textOffset = this.settings.textOffset || new PIXI.Point(5, 4);
 
     this.hasFocus = this.settings.hasFocus || false;
+
+    this.clipContent = this.settings.clipContent || true;
+
+    /**
+     * offsets for the mask of the text
+     */
+    this.viewOffset = this.settings.viewOffset || {left: this.textOffset.x, right: this.textOffset.x, top: 0, bottom: 0};
+
+    this.clippingInvalid = true;
 
     /**
      * indicates if the mouse button has been pressed
@@ -95,10 +104,13 @@ function InputControl(theme, settings) {
     this.cursorStyle = this.settings.cursorStyle || this.cursorStyle || new ThemeFont();
 
     // cursor is the caret/selection sprite
-    this.cursorView = new PIXI.Text('|', this.cursorStyle);
-    if (this.pixiText) {
-        this.cursorView.y = this.pixiText.y;
-    }
+    this.cursorView = new PIXI.Graphics();
+    this.cursorView._index = 0;
+    this.cursorView.lineStyle(this.settings.caretWidth || 2, "#ffffff", 1);
+    this.cursorView.moveTo(0, this.textOffset.y);
+    var lineHeight = this.cursorStyle.fontSize + 2;
+    this.cursorView.lineTo(0, lineHeight + this.textOffset.y);
+    //this.cursorView = new PIXI.Text('|', this.cursorStyle);
     this.addChild(this.cursorView);
 
 
@@ -211,12 +223,65 @@ InputControl.prototype.onInputChanged = function () {
 };
 
 /**
+ * update the rectangle that defines the clipping area
+ */
+InputControl.prototype.refreshMask = function () {
+    if (!this.clipContent) {
+        this.mask = null;
+        return;
+    }
+
+    var clipWidth = this.width - this.viewOffset.left - this.viewOffset.right;
+    if (clipWidth < 0 || isNaN(clipWidth)) {
+        clipWidth = 0;
+    }
+    var clipHeight = this.height - this.viewOffset.top - this.viewOffset.bottom;
+    if (clipHeight < 0 || isNaN(clipHeight)) {
+        clipHeight = 0;
+    }
+    if (!this.mask) {
+        this.mask = new PIXI.Graphics();
+        this.addChild(this.mask);
+    }
+    this.mask.clear();
+    this.mask.lineStyle(0);
+    this.mask.beginFill(0xFFFFFF, 1);
+    //this.mask.drawRect(0, 0, this._width, this._height);
+    this.mask.moveTo(this.viewOffset.left, this.viewOffset.top);
+    this.mask.lineTo(this.viewOffset.left + clipWidth, this.viewOffset.top);
+    this.mask.lineTo(this.viewOffset.left + clipWidth, this.viewOffset.top + clipHeight);
+    this.mask.lineTo(this.viewOffset.left, this.viewOffset.top + clipHeight);
+    this.mask.lineTo(this.viewOffset.left, this.viewOffset.top);
+    this.mask.endFill();
+    // var global = this.toGlobal(new PIXI.Point(0, 0));
+    // this.mask.clear()
+    //     .beginFill('#fff', 1)
+    //     .drawRect(
+    //         global.x,
+    //         global.y,
+    //         clipWidth,
+    //         clipHeight)
+    //     .endFill();
+    this.clippingInvalid = false;
+};
+/**
  * position cursor on the text
  */
 InputControl.prototype.setCursorPos = function () {
     this.textToPixelPos(KeyboardManager.wrapper.cursorPos, this.cursorView.position);
     this.cursorView.position.x += this.pixiText.x;
     this.cursorView.position.y += this.pixiText.y;
+    if (this.cursorView.position.x > this.width - this.viewOffset.right - this.viewOffset.left){
+        var delta = this.cursorView.position.x - this.width + this.viewOffset.right + this.viewOffset.left;
+        this.pixiText.position.x -= delta;
+        this.cursorView.position.x -= delta;
+    }else if (this.cursorView.position.x < this.viewOffset.right){
+        this.pixiText.position.x =  this.pixiText.position.x + this.viewOffset.right - this.cursorView.position.x;
+        this.cursorView.position.x = this.viewOffset.right;
+    } else if (this.pixiText.position.x < this.viewOffset.right
+        && this.pixiText.position.x + this.textWidth(this.text) <= this.width - this.viewOffset.right){
+        this.pixiText.position.x = this.width - this.viewOffset.right - this.textWidth(this.text);
+    }
 };
 
 InputControl.prototype.skinableSetTheme = Skinable.prototype.setTheme;
@@ -618,6 +683,10 @@ InputControl.prototype.redraw = function () {
     // TODO: do NOT use redraw for this but events on the InputWrapper instead!
     if (this._selectionNeedsUpdate) {
         this.updateSelectionBg();
+    }
+
+    if (this.clippingInvalid){
+        this.refreshMask();
     }
     this.redrawSkinable();
 };
