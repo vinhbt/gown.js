@@ -41,6 +41,11 @@ function InputControl(theme, settings) {
 
     this.clipContent = this.settings.clipContent || true;
 
+    this._placeHolder = this.settings.placeHolder || '';
+
+    this._placeHolderStyle = this.settings.placeHolderStyle || this.cursorStyle || new ThemeFont();
+
+    this._displayAsPlaceHolder = false;
     /**
      * offsets for the mask of the text
      */
@@ -95,10 +100,8 @@ function InputControl(theme, settings) {
         this.wrapperType = this.settings.type;
     }
 
-    this.maxChars = this.settings.maxChars || 0;
-    this.text = this.settings.text || '';
-    // add events to listen to react to the Keyboard- and InteractionManager
-    this.addEvents();
+    //init innerContainer use for mask text.
+    this.innerContainer = new PIXI.Container();
 
     //SD: set style for text input
     this.cursorStyle = this.settings.cursorStyle || this.cursorStyle || new ThemeFont();
@@ -110,18 +113,33 @@ function InputControl(theme, settings) {
     this.cursorView.moveTo(0, this.textOffset.y);
     var lineHeight = this.cursorStyle.fontSize + 2;
     this.cursorView.lineTo(0, lineHeight + this.textOffset.y);
+
     //this.cursorView = new PIXI.Text('|', this.cursorStyle);
-    this.addChild(this.cursorView);
+    this.innerContainer.addChild(this.cursorView);
 
 
     // selection background
     this.selectionBg = new PIXI.Graphics();
-    this.addChildAt(this.selectionBg, 0);
+    this.innerContainer.addChildAt(this.selectionBg, 0);
+
+    this.innerContainer.x = this.viewOffset.left;
+    this.innerContainer.y = this.viewOffset.top;
+
+    this.addChild(this.innerContainer);
+
+    this.maxChars = this.settings.maxChars || 0;
+
+    this.text = this.settings.text || '';
+
+    // add events to listen to react to the Keyboard- and InteractionManager
+    this.addEvents();
 
     // TODO: remove events on destroy
     // setup events
     this.on('touchstart', this.onDown, this);
     this.on('mousedown', this.onDown, this);
+
+
 }
 
 InputControl.prototype = Object.create( Skinable.prototype );
@@ -227,7 +245,7 @@ InputControl.prototype.onInputChanged = function () {
  */
 InputControl.prototype.refreshMask = function () {
     if (!this.clipContent) {
-        this.mask = null;
+        this.innerContainer.mask = null;
         return;
     }
 
@@ -239,29 +257,22 @@ InputControl.prototype.refreshMask = function () {
     if (clipHeight < 0 || isNaN(clipHeight)) {
         clipHeight = 0;
     }
-    if (!this.mask) {
-        this.mask = new PIXI.Graphics();
-        this.addChild(this.mask);
+
+    if (!this.innerContainer.mask) {
+        this.innerContainer.mask = new PIXI.Graphics();
+        this.innerContainer.addChild(this.innerContainer.mask);
     }
-    this.mask.clear();
-    this.mask.lineStyle(0);
-    this.mask.beginFill(0xFFFFFF, 1);
+    this.innerContainer.mask.clear();
+    this.innerContainer.mask.lineStyle(0);
+    this.innerContainer.mask.beginFill(0xFFFFFF, 1);
     //this.mask.drawRect(0, 0, this._width, this._height);
-    this.mask.moveTo(this.viewOffset.left, this.viewOffset.top);
-    this.mask.lineTo(this.viewOffset.left + clipWidth, this.viewOffset.top);
-    this.mask.lineTo(this.viewOffset.left + clipWidth, this.viewOffset.top + clipHeight);
-    this.mask.lineTo(this.viewOffset.left, this.viewOffset.top + clipHeight);
-    this.mask.lineTo(this.viewOffset.left, this.viewOffset.top);
-    this.mask.endFill();
-    // var global = this.toGlobal(new PIXI.Point(0, 0));
-    // this.mask.clear()
-    //     .beginFill('#fff', 1)
-    //     .drawRect(
-    //         global.x,
-    //         global.y,
-    //         clipWidth,
-    //         clipHeight)
-    //     .endFill();
+    this.innerContainer.mask.moveTo(0, 0);
+    this.innerContainer.mask.lineTo(clipWidth, 0);
+    this.innerContainer.mask.lineTo(clipWidth, clipHeight);
+    this.innerContainer.mask.lineTo(0, clipHeight);
+    this.innerContainer.mask.lineTo(0, 0);
+    this.innerContainer.mask.endFill();
+
     this.clippingInvalid = false;
 };
 /**
@@ -272,16 +283,16 @@ InputControl.prototype.setCursorPos = function () {
     this.cursorView.position.x += this.pixiText.position.x;
     this.cursorView.position.y += this.pixiText.position.y;
 
-    if (this.cursorView.position.x + this.cursorView.width > this.width - this.viewOffset.right - this.viewOffset.left){
-        var delta = this.cursorView.position.x + this.cursorView.width - this.width + this.viewOffset.right + this.viewOffset.left;
+    if (this.cursorView.position.x + this.cursorView.width > this.innerContainer.mask.width){
+        var delta = this.cursorView.position.x + this.cursorView.width - this.innerContainer.mask.width;
         this.pixiText.position.x -= delta;
         this.cursorView.position.x -= delta;
-    }else if (this.cursorView.position.x < this.viewOffset.right){
-        this.pixiText.position.x =  this.pixiText.position.x + this.viewOffset.right - this.cursorView.position.x;
-        this.cursorView.position.x = this.viewOffset.right;
-    } else if (this.pixiText.position.x < this.viewOffset.right
-        && this.pixiText.position.x + this.textWidth(this.text) <= this.width - this.viewOffset.right - this.cursorView.width){
-        var newX = this.width - this.viewOffset.right - this.cursorView.width - this.textWidth(this.text);
+    }else if (this.cursorView.position.x < 0){
+        this.pixiText.position.x =  this.pixiText.position.x  - this.cursorView.position.x;
+        this.cursorView.position.x = 0;
+    } else if (this.pixiText.position.x < 0
+        && this.pixiText.position.x + this.textWidth(this.text) <= this.innerContainer.mask.width - this.cursorView.width){
+        var newX = this.innerContainer.mask.width - this.cursorView.width - this.textWidth(this.text);
         this.cursorView.position.x += newX - this.pixiText.position.x;
         this.pixiText.position.x = newX;
     }
@@ -306,12 +317,25 @@ InputControl.prototype.setTheme = function(theme) {
 
 InputControl.prototype.setPixiText = function(text) {
     this._displayText = text || '';
+    if (this._displayText.length === 0 && this._placeHolder.length > 0){
+        this._displayText = this._placeHolder;
+        this._displayAsPlaceHolder = true;
+    }else{
+        this._displayAsPlaceHolder = false;
+    }
     if (!this.pixiText) {
-        this.pixiText = new PIXI.Text(text, this.textStyle);
-        this.pixiText.position = this.textOffset;
-        this.addChild(this.pixiText);
+        if (this.innerContainer){
+            this.pixiText = new PIXI.Text(this._displayText, this._displayAsPlaceHolder ? this._placeHolderStyle : this.textStyle);
+            this.pixiText.position = this.textOffset;
+            this.innerContainer.addChild(this.pixiText);
+        }
     } else {
-        this.pixiText.text = text;
+        this.pixiText.text = this._displayText;
+        if (this._displayAsPlaceHolder){
+            this.pixiText.style = this._placeHolderStyle;
+        }else{
+            this.pixiText.style = this.textStyle;
+        }
     }
 };
 
@@ -320,6 +344,7 @@ Object.defineProperty(InputControl.prototype, 'wrapper', {
         return KeyboardManager.wrapper;
     }
 });
+
 /**
  * set the text that is shown inside the input field.
  * calls onTextChange callback if text changes
@@ -330,7 +355,7 @@ Object.defineProperty(InputControl.prototype, 'wrapper', {
 Object.defineProperty(InputControl.prototype, 'text', {
     get: function () {
         if (this.pixiText) {
-            return this.pixiText.text;
+            return this._displayAsPlaceHolder ? '' : this.pixiText.text;
         }
         return this._origText;
     },
@@ -375,7 +400,6 @@ Object.defineProperty(InputControl.prototype, 'maxChars', {
                 this._cursorNeedsUpdate = true;
             }
         }
-        console.log("set maxChars" + value);
         KeyboardManager.wrapper.maxChars = value;
     }
 });
@@ -442,7 +466,6 @@ InputControl.prototype.focus = function () {
     // update the hidden input text, type, maxchars
     KeyboardManager.wrapper.text = this.value;
     KeyboardManager.wrapper.type = this.inputType;
-    console.log("onfocus set maxChars" + this._maxChars);
     this.maxChars = this._maxChars;
 
     this.emit('focusIn', this);

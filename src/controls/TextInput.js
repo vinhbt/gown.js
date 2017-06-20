@@ -13,9 +13,9 @@ var InputControl = require('./InputControl'),
  */
 function TextInput(theme, skinName, options) {
     this._validStates = this._validStates || InputControl.stateNames;
+    InputControl.call(this, theme, options);
     // show and load background image as skin (exploiting skin states)
     this.skinName = skinName || TextInput.SKIN_NAME;
-    InputControl.call(this, theme, options);
 }
 
 TextInput.prototype = Object.create(InputControl.prototype);
@@ -38,6 +38,25 @@ Object.defineProperty(TextInput.prototype, 'displayAsPassword', {
     }
 });
 
+/*
+ * set display as password
+ */
+Object.defineProperty(TextInput.prototype, 'placeHolder', {
+    set: function (value) {
+        this._placeHolder = value;
+        this.setPixiText(this._origText);
+    }
+});
+
+/*
+ * set display as password
+ */
+Object.defineProperty(TextInput.prototype, 'placeHolderStyle', {
+    set: function (value) {
+        this._placeHolderStyle = value;
+        this.setPixiText(this._origText);
+    }
+});
 
 TextInput.prototype.getLines = function() {
     return [this.text];
@@ -70,5 +89,45 @@ TextInput.prototype.updateSelectionBg = function() {
     }
 };
 
+/**
+ * initiate all skins first
+ * (to prevent flickering)
+ *
+ * @method preloadSkins
+ */
+TextInput.prototype.preloadSkins = function() {
+    if (!this._validStates) {
+        return;
+    }
+    for (var i = 0; i < this._validStates.length; i++) {
+        var name = this._validStates[i];
+        this.fromSkin(name, this.skinLoaded.bind(this));
+    }
+};
+
+/**
+ * skin has been loaded (see preloadSkins) and stored into the skinCache.
+ * add to container, hide and resize
+ *
+ * @method skinLoaded
+ */
+TextInput.prototype.skinLoaded = function(skin) {
+    this.addChildAt(skin, 0);
+    skin.alpha = 0.0;
+    if (this.width) {
+        skin.width = this.width;
+    } else if (skin.minWidth) {
+        this.width = skin.width = skin.minWidth;
+    } else { // trường hợp button không set width thì mặc định width = skin.width.
+        this.width = skin.width;
+    }
+    if (this.height) {
+        skin.height = this.height;
+    } else if (skin.minHeight) {
+        this.height = skin.height = skin.minHeight;
+    } else { // trường hợp button không set width thì mặc định height = skin.height.
+        this.height = skin.height;
+    }
+};
 
 // TODO: autoSizeIfNeeded

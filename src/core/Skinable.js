@@ -58,7 +58,7 @@ Skinable.prototype.setTheme = function(theme) {
 * @method theme
 */
 Skinable.prototype.getTheme = function() {
-    return theme;
+    return this.theme;
 };
 /**
  * overwrite data from theme for this specific component.
