@@ -217,7 +217,7 @@ InputControl.prototype.onInputChanged = function () {
         this.text = text;
     }
 
-    console.log("onInputChanged" + text);
+    console.log("onInputChanged " + text + "  " + KeyboardManager.wrapper.selection[0]);
     KeyboardManager.wrapper.cursorPos = KeyboardManager.wrapper.selection[0];
     this.setCursorPos();
 };
@@ -269,19 +269,23 @@ InputControl.prototype.refreshMask = function () {
  */
 InputControl.prototype.setCursorPos = function () {
     this.textToPixelPos(KeyboardManager.wrapper.cursorPos, this.cursorView.position);
-    this.cursorView.position.x += this.pixiText.x;
-    this.cursorView.position.y += this.pixiText.y;
-    if (this.cursorView.position.x > this.width - this.viewOffset.right - this.viewOffset.left){
-        var delta = this.cursorView.position.x - this.width + this.viewOffset.right + this.viewOffset.left;
+    this.cursorView.position.x += this.pixiText.position.x;
+    this.cursorView.position.y += this.pixiText.position.y;
+
+    if (this.cursorView.position.x + this.cursorView.width > this.width - this.viewOffset.right - this.viewOffset.left){
+        var delta = this.cursorView.position.x + this.cursorView.width - this.width + this.viewOffset.right + this.viewOffset.left;
         this.pixiText.position.x -= delta;
         this.cursorView.position.x -= delta;
     }else if (this.cursorView.position.x < this.viewOffset.right){
         this.pixiText.position.x =  this.pixiText.position.x + this.viewOffset.right - this.cursorView.position.x;
         this.cursorView.position.x = this.viewOffset.right;
     } else if (this.pixiText.position.x < this.viewOffset.right
-        && this.pixiText.position.x + this.textWidth(this.text) <= this.width - this.viewOffset.right){
-        this.pixiText.position.x = this.width - this.viewOffset.right - this.textWidth(this.text);
+        && this.pixiText.position.x + this.textWidth(this.text) <= this.width - this.viewOffset.right - this.cursorView.width){
+        var newX = this.width - this.viewOffset.right - this.cursorView.width - this.textWidth(this.text);
+        this.cursorView.position.x += newX - this.pixiText.position.x;
+        this.pixiText.position.x = newX;
     }
+
 };
 
 InputControl.prototype.skinableSetTheme = Skinable.prototype.setTheme;
