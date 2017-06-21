@@ -14,6 +14,7 @@ var InputControl = require('./InputControl'),
 function TextInput(theme, skinName, options) {
     this._validStates = this._validStates || InputControl.stateNames;
     InputControl.call(this, theme, options);
+    this._displayAsPassword = false;
     // show and load background image as skin (exploiting skin states)
     this.skinName = skinName || TextInput.SKIN_NAME;
 }
@@ -34,6 +35,7 @@ Object.defineProperty(TextInput.prototype, 'displayAsPassword', {
     },
     set: function (displayAsPassword) {
         this._displayAsPassword = displayAsPassword;
+        if (displayAsPassword) InputControl.prototype.inputType = "password";
         this.setPixiText(this._origText);
     }
 });
@@ -63,6 +65,7 @@ TextInput.prototype.getLines = function() {
 };
 
 TextInput.prototype.inputControlSetPixiText = InputControl.prototype.setPixiText;
+
 TextInput.prototype.setPixiText = function(text) {
     if (this._displayAsPassword) {
         text = text.replace(/./gi, '*');

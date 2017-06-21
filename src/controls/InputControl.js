@@ -32,7 +32,7 @@ function InputControl(theme, settings) {
     // thid does NOT effect text input
     this.autoPreventInteraction = this.settings.autoPreventInteraction || false;
 
-    this.inputType = this.settings.inputType || 'text';
+    this._inputType = this.settings.inputType || 'text';
 
     // offset from the top-left corner in pixel to the skin
     this.textOffset = this.settings.textOffset || new PIXI.Point(5, 4);
@@ -90,8 +90,9 @@ function InputControl(theme, settings) {
      */
     this.blinkInterval = this.settings.blinkInterval || 500;
 
-    this._restrict = this.settings.restrict || '';
+    this._pattern = this.settings.pattern || '';
 
+    this._patternReg = RegExp(this._pattern);
 
     // create dom element for DOMInputWrapper
     // (not needed if we run inside cordova/cocoon)
@@ -99,6 +100,8 @@ function InputControl(theme, settings) {
         KeyboardManager.wrapper.createInput(this.settings.type);
         this.wrapperType = this.settings.type;
     }
+
+    this._prevSelection = KeyboardManager.wrapper.selection;
 
     //init innerContainer use for mask text.
     this.innerContainer = new PIXI.Container();
@@ -138,7 +141,6 @@ function InputControl(theme, settings) {
     // setup events
     this.on('touchstart', this.onDown, this);
     this.on('mousedown', this.onDown, this);
-
 
 }
 
@@ -231,10 +233,20 @@ InputControl.prototype.onInputChanged = function () {
     var text = KeyboardManager.wrapper.text;
 
     //overrides the current text with the user input from the InputWrapper
-    if(text !== this.text) {
-        this.text = text;
+    if(text !== this.text ) {
+        if (this._pattern.length > 0) {
+            if (text === '' || this._patternReg.test(text)) {
+                this.text = text;
+                this._prevSelection = KeyboardManager.wrapper.selection;
+            } else {
+                KeyboardManager.wrapper.text = this.value;
+                KeyboardManager.wrapper.updateSelection(this._prevSelection[0], this._prevSelection[1]);
+            }
+        }else{
+            this.text = text;
+            this._prevSelection = KeyboardManager.wrapper.selection;
+        }
     }
-
     console.log("onInputChanged " + text + "  " + KeyboardManager.wrapper.selection[0]);
     KeyboardManager.wrapper.cursorPos = KeyboardManager.wrapper.selection[0];
     this.setCursorPos();
@@ -465,7 +477,7 @@ InputControl.prototype.focus = function () {
 
     // update the hidden input text, type, maxchars
     KeyboardManager.wrapper.text = this.value;
-    KeyboardManager.wrapper.type = this.inputType;
+    KeyboardManager.wrapper.type = this._inputType;
     this.maxChars = this._maxChars;
 
     this.emit('focusIn', this);
@@ -755,12 +767,13 @@ Object.defineProperty(InputControl.prototype, 'style', {
     }
 });
 
-Object.defineProperty(InputControl.prototype, 'restrict', {
+Object.defineProperty(InputControl.prototype, 'pattern', {
     get: function () {
-        return this._restrict;
+        return this._pattern;
     },
-    set: function (regex) {
-        this._restrict = regex;
+    set: function (pattern) {
+        this._pattern = pattern || '';
+        this._patternReg = new RegExp(this._pattern);
     }
 });
 /**
