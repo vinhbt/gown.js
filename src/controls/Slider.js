@@ -82,8 +82,6 @@ Slider.prototype.handleMove = function(mouseData) {
         }else {
             yS = this.valueToPixel(this.pixToValue(local.y));
         }
-        // var x = this.thumb.x + local.x - this._start[0];
-        // var y = this.thumb.y + local.y - this._start[1];
         if (this.moveThumb(xS, yS)) {
             // do not override localX/localY in start
             // if we do not move the thumb
