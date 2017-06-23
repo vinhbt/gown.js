@@ -20,7 +20,6 @@ var Skinable = require('../core/Skinable'),
  * @constructor
  */
 function InputControl(theme, settings) {
-    Skinable.call(this, theme);
 
     this.settings = settings || {type:'input'};
 
@@ -103,23 +102,21 @@ function InputControl(theme, settings) {
 
     this._prevSelection = KeyboardManager.wrapper.selection;
 
+    Skinable.call(this, theme);
+
     //init innerContainer use for mask text.
     this.innerContainer = new PIXI.Container();
 
     //SD: set style for text input
-    this.cursorStyle = this.settings.cursorStyle || this.cursorStyle || new ThemeFont();
+    this.style = this.settings.style || this.style || new ThemeFont();
+
+    this.cursorView = new PIXI.Graphics();
+    this.cursorView.x = this.textOffset.x;
+    this.cursorView.y = this.textOffset.y;
 
     // cursor is the caret/selection sprite
-    this.cursorView = new PIXI.Graphics();
-    this.cursorView._index = 0;
-    this.cursorView.lineStyle(this.settings.caretWidth || 2, "#ffffff", 1);
-    this.cursorView.moveTo(0, this.textOffset.y);
-    var lineHeight = this.cursorStyle.fontSize + 2;
-    this.cursorView.lineTo(0, lineHeight + this.textOffset.y);
-
-    //this.cursorView = new PIXI.Text('|', this.cursorStyle);
+    this.initCursor();
     this.innerContainer.addChild(this.cursorView);
-
 
     // selection background
     this.selectionBg = new PIXI.Graphics();
@@ -252,6 +249,17 @@ InputControl.prototype.onInputChanged = function () {
     this.setCursorPos();
 };
 
+InputControl.prototype.initCursor = function() {
+    if (this.cursorView) {
+        this.cursorView.clear();
+        this.cursorView._index = 0;
+        this.cursorView.lineStyle(this.settings.caretWidth || 2, "#ffffff", 1);
+        this.cursorView.moveTo(0, 2);
+        var lineHeight = this.lineHeight() + 2;
+        this.cursorView.lineTo(0, lineHeight);
+    }
+};
+
 /**
  * update the rectangle that defines the clipping area
  */
@@ -285,6 +293,10 @@ InputControl.prototype.refreshMask = function () {
     this.innerContainer.mask.lineTo(0, 0);
     this.innerContainer.mask.endFill();
 
+    if (this.settings.type === 'textarea' && this.pixiText){
+        this.pixiText.style.wordWrapWidth = clipWidth;
+        this.pixiText.style.breakWords = true;
+    }
     this.clippingInvalid = false;
 };
 /**
@@ -292,8 +304,8 @@ InputControl.prototype.refreshMask = function () {
  */
 InputControl.prototype.setCursorPos = function () {
     this.textToPixelPos(KeyboardManager.wrapper.cursorPos, this.cursorView.position);
-    this.cursorView.position.x += this.pixiText.position.x;
-    this.cursorView.position.y += this.pixiText.position.y;
+    // this.cursorView.position.x += this.pixiText.position.x;
+    // this.cursorView.position.y += this.pixiText.position.y;
 
     if (this.cursorView.position.x + this.cursorView.width > this.innerContainer.mask.width){
         var delta = this.cursorView.position.x + this.cursorView.width - this.innerContainer.mask.width;
@@ -324,7 +336,7 @@ InputControl.prototype.setTheme = function(theme) {
     }
     this.skinableSetTheme(theme);
     // copy text so we can force wordwrap
-    this.style = theme.textStyle;
+    this._style = theme.textStyle;
 };
 
 InputControl.prototype.setPixiText = function(text) {
@@ -338,6 +350,10 @@ InputControl.prototype.setPixiText = function(text) {
     if (!this.pixiText) {
         if (this.innerContainer){
             this.pixiText = new PIXI.Text(this._displayText, this._displayAsPlaceHolder ? this._placeHolderStyle : this.textStyle);
+            if (this.settings.type === 'textarea' && this.innerContainer.mask){
+                this.pixiText.style.wordWrapWidth = this.innerContainer.mask.width;
+                this.pixiText.style.breakWords = true;
+            }
             this.pixiText.position = this.textOffset;
             this.innerContainer.addChild(this.pixiText);
         }
@@ -513,8 +529,9 @@ InputControl.prototype.blur = function() {
  * (assume that every character of pixi text has the same line height)
  */
 InputControl.prototype.lineHeight = function() {
-    var style = this.pixiText._style;
-    var lineHeight = style.lineHeight || style.fontSize + style.strokeThickness;
+    var style = this.style;
+    var strokeThickness = style.strokeThickness || 0;
+    var lineHeight = style.lineHeight || style.fontSize + strokeThickness;
     return lineHeight;
 };
 
@@ -660,6 +677,9 @@ InputControl.prototype.textToPixelPos = function(textPos, position) {
         position.x = x;
         position.y = y * this.lineHeight();
     }
+    position.x += this.pixiText.position.x;
+    position.y += this.pixiText.position.y;
+
     return position;
 };
 
@@ -754,14 +774,10 @@ Object.defineProperty(InputControl.prototype, 'style', {
         return this.textStyle;
     },
     set: function(style) {
-        this.cursorStyle = style;
-        if (this.cursorView) {
-            this.cursorView.style = style;
-        }
         this.textStyle = style;
+        this.initCursor();
         if (this.pixiText) {
             this.pixiText.style = style;
-            this._cursorNeedsUpdate = true;
         }
         this._cursorNeedsUpdate = true;
     }

@@ -12,8 +12,8 @@ var DefaultListItemRenderer = require('./renderers/DefaultListItemRenderer');
  * @constructor
  */
 function List(theme) {
+    this._skinName = this.skinName || List.SKIN_NAME;
     Scroller.call(this, theme);
-    this.skinName = this.skinName || List.SKIN_NAME;
 
     // Determines if items in the list may be selected.
     this._selectable = true;

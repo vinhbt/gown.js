@@ -14,7 +14,7 @@ var Scrollable = require('./Scrollable');
  * @constructor
  */
 function ScrollBar(direction, theme) {
-    this.skinName = this.skinName || ScrollBar.SKIN_NAME;
+    this._skinName = this.skinName || ScrollBar.SKIN_NAME;
 
     // this.viewPort = container;
 

@@ -14,7 +14,7 @@ function ScrollThumb(scrollable, theme, skinName) {
     if (!theme.thumbSkin) {
         defaultSkin = Button.SKIN_NAME;
     }
-    this.skinName = skinName || defaultSkin;
+    this._skinName = skinName || defaultSkin;
     if (theme.thumbSkin) {
         this._validStates = ScrollThumb.THUMB_STATES;
     }
