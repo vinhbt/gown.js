@@ -10,7 +10,7 @@ var ToggleButton = require('./ToggleButton');
   */
 function Radio(theme, skinName) {
     this._skinName = skinName || Radio.SKIN_NAME;
-    ToggleButton.call(this, theme, skinName);
+    ToggleButton.call(this, theme, this._skinName);
 }
 
 Radio.prototype = Object.create( ToggleButton.prototype );

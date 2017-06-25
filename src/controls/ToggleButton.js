@@ -12,7 +12,7 @@ var Button = require('./Button');
 function ToggleButton(theme, skinName) {
     this._skinName = skinName || ToggleButton.SKIN_NAME;
     this._validStates = ToggleButton.stateNames;
-    Button.call(this, theme, skinName);
+    Button.call(this, theme, this._skinName);
 
     /**
      * The pressed state of the Button
