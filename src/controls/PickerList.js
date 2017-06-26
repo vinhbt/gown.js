@@ -11,9 +11,9 @@ var Point = PIXI.Point;
  * @memberof PIXI_UI
  * @constructor
  */
+
 function PickerList(theme) {
     this.theme = theme;
-
     Control.call(this);
 
     // TODO: Icons for Button
@@ -41,8 +41,6 @@ PickerList.prototype._clickList = function() {
         this.closeList();
     }
 };
-
-
 
 /**
  * Creates and adds the list sub-component and removes the old instance, if one exists.
@@ -120,8 +118,16 @@ Object.defineProperty(PickerList.prototype, 'itemRendererProperties', {
 PickerList.prototype.createButton = function() {
     this.button = this._buttonFactory(this.theme);
 
-    this.button.width = this.width;
-    this.button.height = this.height;
+    if (this.width) {
+        this.button.width = this.width;
+    }else if (this.button.width){
+        this.width = this.button.width;
+    }
+    if (this.height) {
+        this.button.height = this.height;
+    }else if (this.button.height){
+        this.height = this.button.height;
+    }
 
     this.button.on('mouseup', this._clickList, this);
     this.button.on('touchend', this._clickList, this);

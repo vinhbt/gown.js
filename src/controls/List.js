@@ -1,7 +1,8 @@
-var Scroller = require('./Scroller');
-var ListCollection = require('../data/ListCollection');
-var LayoutGroup = require('./LayoutGroup');
-var DefaultListItemRenderer = require('./renderers/DefaultListItemRenderer');
+var Scroller = require('./Scroller'),
+    ListCollection = require('../data/ListCollection'),
+    LayoutGroup = require('./LayoutGroup'),
+    DefaultListItemRenderer = require('./renderers/DefaultListItemRenderer'),
+    VerticalLayout = require('../layout/VerticalLayout');
 
 /**
  * The basic list
@@ -12,7 +13,6 @@ var DefaultListItemRenderer = require('./renderers/DefaultListItemRenderer');
  * @constructor
  */
 function List(theme) {
-    this._skinName = this.skinName || List.SKIN_NAME;
     Scroller.call(this, theme);
 
     // Determines if items in the list may be selected.
@@ -52,6 +52,14 @@ function List(theme) {
         //  manage the viewport)
         // and instead use the normal LayoutGroup (less abstraction, less code)
         this.viewPort = new LayoutGroup();
+    }
+    if (!this.layout) {
+        var layout = new VerticalLayout();
+        layout.padding = 0;
+        layout.gap = 0;
+        layout.horizontalAlign = VerticalLayout.HORIZONTAL_ALIGN_JUSTIFY;
+        layout.verticalAlign = VerticalLayout.VERTICAL_ALIGN_TOP;
+        this.layout = layout;
     }
     this.layoutChanged = true;
 }
@@ -119,11 +127,11 @@ List.prototype.redraw = function() {
     this.scrollerRedraw();
 
     if (!this.layout) {
-        var layout = new GOWN.layout.VerticalLayout();
+        var layout = new VerticalLayout();
         layout.padding = 0;
         layout.gap = 0;
-        layout.horizontalAlign = GOWN.layout.VerticalLayout.HORIZONTAL_ALIGN_JUSTIFY;
-        layout.verticalAlign = GOWN.layout.VerticalLayout.VERTICAL_ALIGN_TOP;
+        layout.horizontalAlign = VerticalLayout.HORIZONTAL_ALIGN_JUSTIFY;
+        layout.verticalAlign = VerticalLayout.VERTICAL_ALIGN_TOP;
         this.layout = layout;
     }
 };
@@ -147,6 +155,9 @@ List.prototype.refreshRenderers = function () {
             this._itemRenderer.push(itemRenderer);
             this.viewPort.addChild(itemRenderer);
         }
+        this.layout.layoutContainer(this.viewPort);
+        if (!this.width) this.width = this.viewPort.width;
+        if (!this.height) this.height = this.viewPort.height;
     }
 
     this.dataInvalid = false;
@@ -199,6 +210,7 @@ Object.defineProperty(List.prototype, 'layout', {
             // as viewPort for List)
             this.viewPort.layout = layout;
         }
+        this._layout = layout;
         // TODO: this.invalidate(INVALIDATION_FLAG_LAYOUT);
     },
     get: function() {
