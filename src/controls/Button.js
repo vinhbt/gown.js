@@ -204,6 +204,7 @@ Button.prototype.updateDimensions = function() {
         style.fontSize = style.fontSize * scaleY;
         this.labelText.style = style; // trigger setter
         this.updateLabelDimensions();
+        this.updateLabel = false;
     }
 };
 
@@ -309,7 +310,7 @@ Button.prototype.createLabel = function() {
  * @method updateLabelDimensions
  */
 Button.prototype.updateLabelDimensions = function () {
-    if (this.labelText && this.labelText.text &&
+    if (this.labelText && this.labelText.text && this.labelText.text.length > 0 &&
         (this.worldWidth - this.labelText.width) >= 0 &&
         (this.worldHeight - this.labelText.height) >= 0) {
         this.labelText.x = Math.floor((this.worldWidth - this.labelText.width) / 2);
