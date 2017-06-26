@@ -505,7 +505,7 @@ InputControl.prototype.onMouseUpOutside = function() {
     if(this.hasFocus && !this._mouseDown) {
         this.blur();
     }
-    this._mouseDown = false;
+    //this._mouseDown = false;
 };
 
 /**
