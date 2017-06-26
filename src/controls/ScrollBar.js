@@ -45,14 +45,12 @@ ScrollBar.prototype.scrollableredraw = Scrollable.prototype.redraw;
 ScrollBar.prototype.redraw = function() {
     if (this.invalidTrack) {
         if (this.container && this.container.viewPort && this.thumb) {
-            if (this.direction === Scrollable.HORIZONTAL) {
+            if (this.container.viewPort.layout.alignment === Scrollable.HORIZONTAL) {
                 this.thumb.width = Math.max(this.minThumbWidth,
-                    this.container.width /
-                    (this.container.viewPort.width / this.container.width));
+                    this.container.width / (this.container.viewPort.width / this.container.width));
             } else {
                 this.thumb.height = Math.max(this.minThumbHeight,
-                    this.container.height /
-                    (this.container.viewPort.height / this.container.height));
+                    this.container.height / (this.container.viewPort.height / this.container.height));
             }
         }
         this.scrollableredraw(this);
@@ -67,16 +65,15 @@ ScrollBar.prototype.redraw = function() {
  */
 ScrollBar.prototype.thumbMoved = function(x, y) {
     if (this.container && this.container.viewPort) {
-        if (this._direction === Scrollable.HORIZONTAL) {
-            this.container.scrollToPosition(
-                -(this.container.viewPort.width - this.container.width) *
-                    (x / (this.container.width - this.thumb.width)),
-                0);
-        } else if (this._direction === Scrollable.VERTICAL) {
-            this.container.scrollToPosition(
-                0,
-                -(this.container.viewPort.height - this.container.height) *
-                    (y / (this.container.height - this.thumb.height)));
+        if(this.container.viewPort.layout.alignment === 'vertical'){
+            this.container.updateVerticalScrollFromTouchPosition(
+                -(this.container.viewPort.height - this.container.height) * (y / (this.container.height - this.thumb.height)),
+                true
+            );
+        }else {
+            this.container.updateHorizontalScrollFromTouchPosition(
+                -(this.container.viewPort.width - this.container.width) * (x / (this.container.width - this.thumb.width))
+            );
         }
     }
 };
@@ -97,24 +94,6 @@ Object.defineProperty(ScrollBar.prototype, 'direction', {
         this.invalid = true;
     }
 });
-
-
-/**
- * container of the scrollbar
- *
- * @property value
- * @type Number
- */
-Object.defineProperty(ScrollBar.prototype, 'container', {
-    get: function() {
-        return this._container;
-    },
-    set: function(container) {
-        this._container = container;
-        this.invalid = true;
-    }
-});
-
 
 /**
  * value of the scrollbar
