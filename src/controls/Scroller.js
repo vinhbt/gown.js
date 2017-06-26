@@ -1093,16 +1093,13 @@ Scroller.prototype.refreshMask = function () {
     }
     if (!this.mask) {
         this.mask = new PIXI.Graphics();
+        this.addChild(this.mask);
     }
-    var global = this.toGlobal(new PIXI.Point(0, 0));
-    this.mask.clear()
-        .beginFill('#fff', 1)
-        .drawRect(
-            global.x,
-            global.y,
-            clipWidth,
-            clipHeight)
-        .endFill();
+    // var global = this.toGlobal(new PIXI.Point(0, 0));
+    this.mask.clear();
+    this.mask.beginFill('#fff', 1);
+    this.mask.drawRect(0, 0, clipWidth, clipHeight);
+    this.mask.endFill();
     this.clippingInvalid = false;
 };
 
@@ -1353,3 +1350,21 @@ Scroller.prototype.direction = function () {
     }
     return scroll;
 };
+
+Object.defineProperty(Scroller.prototype, 'startTouch', {
+    get: function() {
+        return this._startTouch;
+    },
+    set: function(value) {
+        this._startTouch = value;
+    }
+});
+
+Object.defineProperty(Scroller.prototype, 'isScrollingStopped', {
+    get: function() {
+        return this._isScrollingStopped;
+    },
+    set: function(value) {
+        this._isScrollingStopped = value;
+    }
+});

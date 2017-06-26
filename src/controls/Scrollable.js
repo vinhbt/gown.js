@@ -292,11 +292,11 @@ Scrollable.prototype.showTrack = function(skin) {
  */
 Scrollable.prototype.showProgress = function(skin) {
     if (this.progressSkin !== skin) {
-        if(this.progressSkin) {
-            this.removeChild(this.progressSkin);
-        }
+        // if(this.progressSkin) {
+        //     this.removeChild(this.progressSkin);
+        // }
         skin.width = skin.height = 0;
-        this.addChildAt(skin, 0);
+        // this.addChildAt(skin, 0);
         this.progressSkin = skin;
         if (this.skin) {
             this._updateProgressSkin();
