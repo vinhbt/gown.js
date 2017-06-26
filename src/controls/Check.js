@@ -11,7 +11,7 @@ var ToggleButton = require('./ToggleButton');
   */
 function Check(theme, skinName) {
     // TODO: use and place Label from ToggleButton
-    skinName = skinName || Check.SKIN_NAME;
+    this._skinName = skinName || Check.SKIN_NAME;
     ToggleButton.call(this, theme, skinName);
 }
 

@@ -10,8 +10,8 @@ var Skinable = require('../core/Skinable');
  */
 function CheckBox(preselected, theme, skinName) {
     this._validStates = this._validStates || CheckBox.stateNames.concat(CheckBox.selectedStateNames);
+    this._skinName = skinName || CheckBox.SKIN_NAME;
     Skinable.call(this, theme);
-    this.skinName = skinName || CheckBox.SKIN_NAME;
 
     this._currentState = 'up';
     this.selected = preselected || false;

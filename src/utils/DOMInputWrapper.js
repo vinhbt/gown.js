@@ -50,6 +50,7 @@ DOMInputWrapper.hiddenInput = {
  * @returns {DOMObject}
  */
 DOMInputWrapper.prototype.createInput = function(tagName) {
+    this.tagName = tagName;
     if (!DOMInputWrapper.hiddenInput[tagName]) {
         var domInput = document.createElement(tagName);
         domInput.setAttribute("type", "text");

@@ -9,7 +9,7 @@ var ToggleButton = require('./ToggleButton');
   * @constructor
   */
 function Radio(theme, skinName) {
-    skinName = skinName || Radio.SKIN_NAME;
+    this._skinName = skinName || Radio.SKIN_NAME;
     ToggleButton.call(this, theme, skinName);
 }
 

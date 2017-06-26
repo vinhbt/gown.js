@@ -12,12 +12,13 @@ var ThemeFont = require('../skin/ThemeFont');
  */
 function Button(theme, skinName) {
     this._validStates = this._validStates || Button.stateNames;
-    this.textStyle = this.textStyle || new ThemeFont();
+    this._skinName = skinName || Button.SKIN_NAME;
     Skinable.call(this, theme);
-    this._label = "";
-    this.updateLabel = false; // label text changed
 
-    this.skinName = skinName || Button.SKIN_NAME;
+    this.textStyle = this.textStyle || new ThemeFont();
+    this._label = "";
+
+    this.updateLabel = false; // label text changed
 
     this.handleEvent(Button.UP);
 

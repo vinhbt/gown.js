@@ -13,10 +13,10 @@ var InputControl = require('./InputControl'),
  */
 function TextInput(theme, skinName, options) {
     this._validStates = this._validStates || InputControl.stateNames;
+    // show and load background image as skin (exploiting skin states)
+    this._skinName = skinName || TextInput.SKIN_NAME;
     InputControl.call(this, theme, options);
     this._displayAsPassword = false;
-    // show and load background image as skin (exploiting skin states)
-    this.skinName = skinName || TextInput.SKIN_NAME;
 }
 
 TextInput.prototype = Object.create(InputControl.prototype);

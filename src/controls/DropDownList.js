@@ -9,7 +9,7 @@ var Skinable = require('../core/Skinable');
  * @constructor
  */
 function DropDownList(theme) {
-    this.skinName = DropDownList.SKIN_NAME;
+    this._skinName = DropDownList.SKIN_NAME;
     Skinable.call(this, theme);
 
     this.showDropDown = false;
