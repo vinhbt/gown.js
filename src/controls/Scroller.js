@@ -1093,13 +1093,14 @@ Scroller.prototype.refreshMask = function () {
     }
     if (!this.mask) {
         this.mask = new PIXI.Graphics();
+        this.addChild(this.mask);
     }
-    var global = this.toGlobal(new PIXI.Point(0, 0));
+    //var global = this.toGlobal(new PIXI.Point(0, 0));
     this.mask.clear()
         .beginFill('#fff', 1)
         .drawRect(
-            global.x,
-            global.y,
+            0,
+            0,
             clipWidth,
             clipHeight)
         .endFill();
