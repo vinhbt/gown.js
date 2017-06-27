@@ -6,7 +6,7 @@ module.exports = {
      * @method initResizeScaling
      */
     initResizeScaling: function() {
-        this.resizeScaling = true; // resize instead of scale
+        this.resizeScaling = false; // resize instead of scale
 
         this.minWidth = 1;
         this.minHeight = 1;

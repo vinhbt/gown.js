@@ -174,34 +174,34 @@ LayoutAlignment.prototype.layout = function(items, maxWidth, maxHeight) {
     var itemSpace, itemWidth, itemHeight;
     var dimensions;
     // calculate item position (x/y coordinates)
-    // for(var i = 0; i < items.length; i++)
-    // {
-    //     var item = items[i];
-    //
-    //     dimensions = itemDimensions(item);
-    //     itemWidth = dimensions[0];
-    //     itemHeight = dimensions[1];
-    //
-    //     // move item to position calculated in previous loop
-    //     if (_hor) {
-    //         item.x = Math.floor(position);
-    //         // set height of highest item
-    //         height = Math.max(itemHeight, height);
-    //     } else {
-    //         item.y = Math.floor(position);
-    //         // set width of widest item
-    //         width = Math.max(itemWidth, width);
-    //     }
-    //     itemSpace = _hor ? itemWidth : itemHeight;
-    //     // calculate position for next item
-    //     position += itemSpace + this._currentGap(i, items);
-    //
-    //     // if the item has a layout and children, layout the children
-    //     if (this.layoutChildren && item.children &&
-    //         item.layout && item.layout.layout) {
-    //         item.layout.layout(item.children, itemWidth, itemHeight);
-    //     }
-    // }
+    for(var i = 0; i < items.length; i++)
+    {
+        var item = items[i];
+
+        dimensions = itemDimensions(item);
+        itemWidth = dimensions[0];
+        itemHeight = dimensions[1];
+
+        // move item to position calculated in previous loop
+        if (_hor) {
+            item.x = Math.floor(position);
+            // set height of highest item
+            height = Math.max(itemHeight, height);
+        } else {
+            item.y = Math.floor(position);
+            // set width of widest item
+            width = Math.max(itemWidth, width);
+        }
+        itemSpace = _hor ? itemWidth : itemHeight;
+        // calculate position for next item
+        position += itemSpace + this._currentGap(i, items);
+
+        // if the item has a layout and children, layout the children
+        if (this.layoutChildren && item.children &&
+            item.layout && item.layout.layout) {
+            item.layout.layout(item.children, itemWidth, itemHeight);
+        }
+    }
     if (_hor) {
         width = position;
     } else {
@@ -247,5 +247,32 @@ Object.defineProperty(LayoutAlignment.prototype, 'lastGap', {
     },
     get: function() {
         return this._lastGap;
+    }
+});
+
+Object.defineProperty(LayoutAlignment.prototype, 'paddingLeft', {
+    set: function(value) {
+        this._paddingLeft = value;
+    },
+    get: function() {
+        return this._paddingLeft;
+    }
+});
+
+Object.defineProperty(LayoutAlignment.prototype, 'paddingTop', {
+    set: function(value) {
+        this._paddingTop = value;
+    },
+    get: function() {
+        return this._paddingTop;
+    }
+});
+
+Object.defineProperty(LayoutAlignment.prototype, 'needUpdate', {
+    set: function(value) {
+        this._needUpdate = value;
+    },
+    get: function() {
+        return this._needUpdate;
     }
 });
