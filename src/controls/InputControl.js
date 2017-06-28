@@ -293,7 +293,7 @@ InputControl.prototype.refreshMask = function () {
     this.innerContainer.mask.lineTo(0, 0);
     this.innerContainer.mask.endFill();
 
-    if (this.settings.type === 'textarea' && this.pixiText){
+    if (this.settings.mode === 'textarea' && this.pixiText){
         this.pixiText.style.wordWrapWidth = clipWidth;
         this.pixiText.style.breakWords = true;
     }
@@ -350,7 +350,7 @@ InputControl.prototype.setPixiText = function(text) {
     if (!this.pixiText) {
         if (this.innerContainer){
             this.pixiText = new PIXI.Text(this._displayText, this._displayAsPlaceHolder ? this._placeHolderStyle : this.textStyle);
-            if (this.settings.type === 'textarea' && this.innerContainer.mask){
+            if (this.settings.mode === 'textarea' && this.innerContainer.mask){
                 this.pixiText.style.wordWrapWidth = this.innerContainer.mask.width;
                 this.pixiText.style.breakWords = true;
             }
