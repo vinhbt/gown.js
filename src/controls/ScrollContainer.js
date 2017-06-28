@@ -1,5 +1,4 @@
 var Scroller = require('./Scroller');
-var ScrollBar = require('./ScrollBar');
 
 /**
  * @class ScrollContainer
