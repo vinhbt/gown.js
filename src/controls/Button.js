@@ -204,7 +204,6 @@ Button.prototype.updateDimensions = function() {
         style.fontSize = style.fontSize * scaleY;
         this.labelText.style = style; // trigger setter
         this.updateLabelDimensions();
-        this.updateLabel = false;
     }
 };
 
