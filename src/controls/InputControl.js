@@ -280,7 +280,7 @@ InputControl.prototype.refreshMask = function () {
 
     if (!this.innerContainer.mask) {
         this.innerContainer.mask = new PIXI.Graphics();
-        this.innerContainer.addChild(this.innerContainer.mask);
+        this.innerContainer.addChildAt(this.innerContainer.mask, 0);
     }
     this.innerContainer.mask.clear();
     this.innerContainer.mask.lineStyle(0);

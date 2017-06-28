@@ -1093,7 +1093,7 @@ Scroller.prototype.refreshMask = function () {
     }
     if (!this.mask) {
         this.mask = new PIXI.Graphics();
-        this.addChild(this.mask);
+        this.addChildAt(this.mask, 0);
     }
     // var global = this.toGlobal(new PIXI.Point(0, 0));
     this.mask.clear();
