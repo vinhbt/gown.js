@@ -189,6 +189,7 @@ List.prototype.itemRendererChangeHandler = function(itemRenderer, value) {
             }
         }
     }
+    this.selectedItem = itemRenderer;
 
     this.emit(List.CHANGE, itemRenderer, value);
 };
@@ -327,4 +328,19 @@ Object.defineProperty(List.prototype, 'dataProvider', {
     }
 });
 
-// TODO: selectedItem
+Object.defineProperty(List.prototype, 'selectedItem', {
+    set: function(value) {
+        if(!this._dataProvider) {
+            this.selectedIndex = -1;
+            return;
+        }
+        this.selectedIndex = this._dataProvider.getItemIndex(value.data);
+    },
+    get: function() {
+        if(!this._dataProvider || this._selectedIndex < 0 || this._selectedIndex >= this._dataProvider.length) {
+            return null;
+        }
+
+        return this._dataProvider.getItemAt(this._selectedIndex);
+    }
+});

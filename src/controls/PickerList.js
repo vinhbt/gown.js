@@ -34,6 +34,14 @@ module.exports = PickerList;
 // name of skin that will be applied (ignored for testing right now ;-) )
 PickerList.SKIN_NAME = 'picker_list';
 
+/**
+ * Dispatched when the list open or close.
+ */
+PickerList.STATE_CHANGE = 'state';
+
+PickerList.SELECT = 'select';
+
+
 PickerList.prototype._clickList = function() {
     if (!this.open) {
         this.openList();
@@ -69,14 +77,18 @@ PickerList.prototype.openList = function() {
     this.list.clippingInvalid = true;
     this.popUpParent.addChild(this.list);
     this.open = true;
+    this.emit(PickerList.STATE_CHANGE, true);
 };
 
 /**
  * Closes the pop-up list, if it is open.
  */
 PickerList.prototype.closeList = function() {
-    this.popUpParent.removeChild(this.list);
-    this.open = false;
+    if (this.open) {
+        this.emit(PickerList.STATE_CHANGE, false);
+        this.popUpParent.removeChild(this.list);
+        this.open = false;
+    }
 };
 
 Object.defineProperty(PickerList.prototype, 'itemRendererFactory', {
@@ -148,13 +160,14 @@ PickerList.prototype.createList = function() {
     }
     // forward list events
     this.list.on(List.CHANGE, this._listChange, this);
+
 };
 
 /**
  * forward list events
  */
 PickerList.prototype._listChange = function(itemRenderer, value) {
-    this.emit(List.CHANGE, itemRenderer, value);
+    this.emit(PickerList.SELECT, itemRenderer, this.list.selectedIndex);
     if (this.button && value) {
         this.button.label = itemRenderer.label;
     }
@@ -186,6 +199,20 @@ PickerList.prototype.destroy = function() {
         this.list.destroy();
     }
 };
+Object.defineProperty(PickerList.prototype, 'selectedItem', {
+    set: function(value) {
+        if(!this.list) {
+            return;
+        }
+        this.list.selectedItem = value;
+    },
+    get: function() {
+        if(!this.list) {
+            return null;
+        }
+        return this.list.selectedItem;
+    }
+});
 // TODO: setter/gettter for List to get selectedItem
 // TODO: prompt
 // TODO: PopupManager (!)
