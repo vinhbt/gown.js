@@ -111,8 +111,8 @@ function InputControl(theme, settings) {
     this.style = this.settings.style || this.style || new ThemeFont();
 
     this.cursorView = new PIXI.Graphics();
-    this.cursorView.x = this.textOffset.x;
-    this.cursorView.y = this.textOffset.y;
+    // this.cursorView.x = this.textOffset.x;
+    // this.cursorView.y = this.textOffset.y;
 
     // cursor is the caret/selection sprite
     this.initCursor();
@@ -255,8 +255,8 @@ InputControl.prototype.initCursor = function() {
         this.cursorView._index = 0;
         this.cursorView.lineStyle(this.settings.caretWidth || 2, "#ffffff", 1);
         this.cursorView.moveTo(0, 2);
-        var lineHeight = this.lineHeight() + 2;
-        this.cursorView.lineTo(0, lineHeight);
+        var lineHeight = this.lineHeight();
+        this.cursorView.lineTo(0, lineHeight + 2);
     }
 };
 
@@ -280,7 +280,9 @@ InputControl.prototype.refreshMask = function () {
 
     if (!this.innerContainer.mask) {
         this.innerContainer.mask = new PIXI.Graphics();
-        this.innerContainer.addChildAt(this.innerContainer.mask, 0);
+        this.innerContainer.mask.x = this.viewOffset.left;
+        this.innerContainer.mask.y = this.viewOffset.top;
+        this.innerContainer.addChildAt(this.innerContainer.mask, 1);
     }
     this.innerContainer.mask.clear();
     this.innerContainer.mask.lineStyle(0);
@@ -294,7 +296,7 @@ InputControl.prototype.refreshMask = function () {
     this.innerContainer.mask.endFill();
 
     if (this.settings.mode === 'textarea' && this.pixiText){
-        this.pixiText.style.wordWrapWidth = clipWidth;
+        this.pixiText.style.wordWrapWidth = clipWidth - this.cursorView.width;
         this.pixiText.style.breakWords = true;
     }
     this.clippingInvalid = false;
@@ -307,19 +309,22 @@ InputControl.prototype.setCursorPos = function () {
     // this.cursorView.position.x += this.pixiText.position.x;
     // this.cursorView.position.y += this.pixiText.position.y;
 
-    if (this.cursorView.position.x + this.cursorView.width > this.innerContainer.mask.width){
-        var delta = this.cursorView.position.x + this.cursorView.width - this.innerContainer.mask.width;
-        this.pixiText.position.x -= delta;
-        this.cursorView.position.x -= delta;
-    }else if (this.cursorView.position.x < 0){
-        this.pixiText.position.x =  this.pixiText.position.x  - this.cursorView.position.x;
-        this.cursorView.position.x = 0;
-    } else if (this.pixiText.position.x < 0
-        && this.pixiText.position.x + this.textWidth(this.text) <= this.innerContainer.mask.width - this.cursorView.width){
-        var newX = this.innerContainer.mask.width - this.cursorView.width - this.textWidth(this.text);
-        this.cursorView.position.x += newX - this.pixiText.position.x;
-        this.pixiText.position.x = newX;
+    if (this.settings.mode !== 'textarea') {
+        if (this.cursorView.position.x + this.cursorView.width > this.innerContainer.mask.width) {
+            var delta = this.cursorView.position.x + this.cursorView.width - this.innerContainer.mask.width;
+            this.pixiText.position.x -= delta;
+            this.cursorView.position.x -= delta;
+        } else if (this.cursorView.position.x < 0) {
+            this.pixiText.position.x = this.pixiText.position.x - this.cursorView.position.x;
+            this.cursorView.position.x = 0;
+        } else if (this.pixiText.position.x < 0
+            && this.pixiText.position.x + this.textWidth(this.text) <= this.innerContainer.mask.width - this.cursorView.width) {
+            var newX = this.innerContainer.mask.width - this.cursorView.width - this.textWidth(this.text);
+            this.cursorView.position.x += newX - this.pixiText.position.x;
+            this.pixiText.position.x = newX;
+        }
     }
+    //TODO adjust for text area
 
 };
 
@@ -336,7 +341,7 @@ InputControl.prototype.setTheme = function(theme) {
     }
     this.skinableSetTheme(theme);
     // copy text so we can force wordwrap
-    this._style = theme.textStyle;
+    this.style = theme.textStyle;
 };
 
 InputControl.prototype.setPixiText = function(text) {
@@ -351,7 +356,11 @@ InputControl.prototype.setPixiText = function(text) {
         if (this.innerContainer){
             this.pixiText = new PIXI.Text(this._displayText, this._displayAsPlaceHolder ? this._placeHolderStyle : this.textStyle);
             if (this.settings.mode === 'textarea' && this.innerContainer.mask){
-                this.pixiText.style.wordWrapWidth = this.innerContainer.mask.width;
+                if (this.textStyle){
+                    this.textStyle.wordWrapWidth = this.innerContainer.mask.width - this.cursorView.width;
+                    this.textStyle.breakWords = true;
+                }
+                this.pixiText.style.wordWrapWidth = this.innerContainer.mask.width - this.cursorView.width;
                 this.pixiText.style.breakWords = true;
             }
             this.pixiText.position = this.textOffset;
@@ -505,7 +514,7 @@ InputControl.prototype.onMouseUpOutside = function() {
     if(this.hasFocus && !this._mouseDown) {
         this.blur();
     }
-    //this._mouseDown = false;
+    this._mouseDown = false;
 };
 
 /**
@@ -529,9 +538,10 @@ InputControl.prototype.blur = function() {
  * (assume that every character of pixi text has the same line height)
  */
 InputControl.prototype.lineHeight = function() {
-    var style = this.style;
+    var style = this.pixiText ? this.pixiText.style : this.style;
+    var fontSize =  this.pixiText ? PIXI.Text.calculateFontProperties(this.pixiText._font).fontSize : style.fontSize;
     var strokeThickness = style.strokeThickness || 0;
-    var lineHeight = style.lineHeight || style.fontSize + strokeThickness;
+    var lineHeight = style.lineHeight || fontSize + strokeThickness;
     return lineHeight;
 };
 

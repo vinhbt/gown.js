@@ -121,7 +121,6 @@ TextArea.prototype.getLines = function() {
     return wrappedText.split(/(?:\r\n|\r|\n)/);
 };
 
-
 // Object.defineProperty(InputControl.prototype, 'width', {
 //     get: function () {
 //         return this._width;
