@@ -18,12 +18,16 @@ function TextArea(theme, skinName) {
     this._validStates = this._validStates || InputControl.stateNames;
     // show and load background image as skin (exploiting skin states)
     this._skinName = skinName || TextArea.SKIN_NAME;
-    InputControl.call(this, theme, {type: 'input', mode: "textarea"});
+    InputControl.call(this, theme, {type: 'textarea', mode: "textarea"});
 
-    this._fromPos = this.textOffset.clone();
-    this._toPos = this.textOffset.clone();
-    this._fromText = this.textOffset.clone();
-    this._toText = this.textOffset.clone();
+    // this._fromPos = this.textOffset.clone();
+    // this._toPos = this.textOffset.clone();
+    // this._fromText = this.textOffset.clone();
+    // this._toText = this.textOffset.clone();
+    this._fromPos = new PIXI.Point(0, 0);
+    this._toPos = new PIXI.Point(0, 0);
+    this._fromText = new PIXI.Point(0, 0);
+    this._toText = new PIXI.Point(0, 0);
 }
 
 TextArea.prototype = Object.create(InputControl.prototype);
@@ -120,44 +124,3 @@ TextArea.prototype.getLines = function() {
     var wrappedText = this.pixiText.wordWrap(this.text);
     return wrappedText.split(/(?:\r\n|\r|\n)/);
 };
-
-// Object.defineProperty(InputControl.prototype, 'width', {
-//     get: function () {
-//         return this._width;
-//     },
-//     set: function(value) {
-//         this._width = value;
-//         this.minWidth = Math.min(value, this.minWidth);
-//         if (this.pixiText) {
-//             this.pixiText.style.wordWrapWidth = value - this.textOffset.x * 2;
-//             this.pixiText.style.breakWords = true;
-//             this._cursorNeedsUpdate = true;
-//             this._selectionNeedsUpdate = true;
-//         }
-//     }
-// });
-//
-// Object.defineProperty(TextArea.prototype, 'style', {
-//     get: function() {
-//         return this.textStyle;
-//     },
-//     set: function(style) {
-//         this.cursorStyle = style;
-//         if (this.cursorView) {
-//             this.cursorView.style = style;
-//         }
-//         style = style.clone();
-//         style.wordWrap = true;
-//         if (!style.wordWrapWidth && this.textOffset && this.width) {
-//             style.wordWrapWidth = this.width - this.textOffset.x * 2;
-//             style.breakWords = true;
-//         }
-//         this.textStyle = style;
-//         if (this.pixiText) {
-//             this.pixiText.style = style;
-//         }
-//         this._cursorNeedsUpdate = true;
-//     }
-// });
-
-
