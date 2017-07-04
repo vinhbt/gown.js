@@ -4,22 +4,26 @@ var Skinable = require('./Skinable'),
 function InputBase(theme, settings) {
     settings = settings || {};
     this.stage = null;
-    this._useTab = this._usePrev = this._useNext = (settings.useTab || false);
+    this._useTab = this._usePrev = this._useNext = (settings.useTab || true);
     this._hasFocus = settings.hasFocus || false;
     this._mouseDown = false;
+    self = this;
     Skinable.call(this, theme);
 
 
     this.on("pointerdown", this.onDown, this);
 
     this.on("pointerupoutside", this.onMouseUpOutside, this);
-    //var cancelFocusEvent = new ClickEvent(this.stage)
 }
 
 
 InputBase.prototype = Object.create( Skinable.prototype );
 InputBase.prototype.constructor = InputBase;
 module.exports = InputBase;
+
+InputBase.FocusIn = 'focusIn';
+
+InputBase.FocusOut = 'focusOut';
 
 InputBase.prototype.setTabInfo = function (tabIndex, tabGroup) {
     InputController.registrer(this, tabIndex, tabGroup);
@@ -39,20 +43,21 @@ InputBase.prototype.onMouseUpOutside = function() {
 };
 
 InputBase.prototype.keyDownEvent = function (e) {
+
     if (e.which === 9) {
-        if (this._useTab) {
+        if (self._useTab) {
             InputController.fireTab();
             e.preventDefault();
         }
     }
     else if (e.which === 38) {
-        if (this._usePrev) {
+        if (self._usePrev) {
             InputController.firePrev();
             e.preventDefault();
         }
     }
     else if (e.which === 40) {
-        if (this._useNext) {
+        if (self._useNext) {
             InputController.fireNext();
             e.preventDefault();
         }
@@ -68,6 +73,7 @@ InputBase.prototype.onDown = function(e) {
 
 InputBase.prototype.onUp = function(e) {
     this._mouseDown = false;
+    this.off("pointerup", this.onUp, this);
     console.log('onUp', this._hasFocus, this._mouseDown);
 };
 
@@ -76,7 +82,7 @@ InputBase.prototype.focus = function () {
         this._hasFocus = true;
         this._bindEvents();
         InputController.set(this);
-        this.emit("focusIn");
+        this.emit(InputBase.FocusIn);
     }
 };
 
@@ -85,7 +91,7 @@ InputBase.prototype.blur = function () {
         InputController.clear();
         this._hasFocus = false;
         this._clearEvents();
-        this.emit("focusOut");
+        this.emit(InputBase.FocusOut);
     }
 };
 
@@ -116,13 +122,13 @@ InputBase.prototype._rootStage = function () {
     return stage;
 };
 InputBase.prototype._bindEvents = function () {
-    this.on("pointerup", this.onUp);
+    this.on("pointerup", this.onUp, this);
     if (this.stage === null){
         this.stage = this._rootStage();
     }
     if (this.stage !== null) {
         this.stage.interactive = true;
-        this.stage.on("pointerdown", this.documentMouseDown.bind(this), this);
+        this.stage.on("pointerdown", this.documentMouseDown, this);
         document.addEventListener("keydown", this.keyDownEvent, false);
     }
 };
@@ -131,7 +137,7 @@ InputBase.prototype._clearEvents = function () {
     this.off("pointerup", this.onUp, this);
 
     if (this.stage !== null) {
-        this.stage.off("pointerdown", this.documentMouseDown.bind(this), this);
+        this.stage.off("pointerdown", this.documentMouseDown, this);
         document.removeEventListener("keydown", this.keyDownEvent, false);
     }
 };
