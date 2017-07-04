@@ -11,4 +11,5 @@
 module.exports = {
     Control:        require('./Control'),
     Skinable:       require('./Skinable'),
+    InputBase:      require('./InputBase')
 };

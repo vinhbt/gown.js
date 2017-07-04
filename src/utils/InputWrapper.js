@@ -9,7 +9,7 @@ function InputWrapper(manager, name) {
 }
 module.exports = InputWrapper;
 
-InputWrapper.prototype.focus = function() {
+InputWrapper.prototype.focus = function(tagName) {
     // TODO: needed?
 };
 

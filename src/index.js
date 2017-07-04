@@ -80,6 +80,7 @@ if (typeof PIXI === 'undefined') {
     // manager
     core.ResizeManager =     require('./interaction/ResizeManager');
     core.KeyboardManager =   require('./interaction/KeyboardManager');
+    core.InputController =   require('./interaction/InputController');
 
     // add core plugins.
     core.utils = require('./utils');

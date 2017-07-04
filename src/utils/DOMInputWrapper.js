@@ -149,7 +149,7 @@ DOMInputWrapper.prototype.focus = function(tagName) {
  * deactivate the text input
  * blurs ALL hiddenInputs
  */
-DOMInputWrapper.blur = function() {
+DOMInputWrapper.prototype.blur = function() {
     for (var tagName in DOMInputWrapper.hiddenInput) {
         DOMInputWrapper.hiddenInput[tagName].blur();
     }

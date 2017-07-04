@@ -55,7 +55,7 @@ function KeyboardManager(renderer, options) {
     this.processKeyboard = this.processKeyboard.bind(this);
 
     // detect if we use DOMInputWrapper or KeyboardInputWrapper
-    if (window.cordova || window.cocoonjsCheckArgs) {
+    if (window.cocoonjsCheckArgs) {
         // TODO: this provides just basic functionality, test and implement
         // it some more, see https://github.com/GreyRook/gown.js/issues/99
         KeyboardManager.wrapper = new KeyboardInputWrapper(this);

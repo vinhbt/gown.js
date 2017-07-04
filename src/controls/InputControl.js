@@ -1,4 +1,5 @@
 var Skinable = require('../core/Skinable'),
+    InputBase = require('../core/InputBase'),
     KeyboardManager = require('../interaction/KeyboardManager'),
     InputWrapper = require('../utils/InputWrapper'),
     ThemeFont = require('../skin/ThemeFont');
@@ -36,8 +37,6 @@ function InputControl(theme, settings) {
     // offset from the top-left corner in pixel to the skin
     this.textOffset = this.settings.textOffset || new PIXI.Point(5, 4);
 
-    this.hasFocus = this.settings.hasFocus || false;
-
     this.clipContent = this.settings.clipContent || true;
 
     this._placeHolder = this.settings.placeHolder || '';
@@ -52,13 +51,6 @@ function InputControl(theme, settings) {
 
     this.clippingInvalid = true;
 
-    /**
-     * indicates if the mouse button has been pressed
-     * @property _mouseDown
-     * @type {boolean}
-     * @private
-     */
-    this._mouseDown = false;
 
     this.currentState = InputControl.UP;
 
@@ -102,7 +94,7 @@ function InputControl(theme, settings) {
 
     this._prevSelection = KeyboardManager.wrapper.selection;
 
-    Skinable.call(this, theme);
+    InputBase.call(this, theme, settings);
 
     //init innerContainer use for mask text.
     this.innerContainer = new PIXI.Container();
@@ -136,12 +128,12 @@ function InputControl(theme, settings) {
 
     // TODO: remove events on destroy
     // setup events
-    this.on('touchstart', this.onDown, this);
-    this.on('mousedown', this.onDown, this);
+    //this.on('touchstart', this.onDown, this);
+    //this.on('mousedown', this.onDown, this);
 
 }
 
-InputControl.prototype = Object.create( Skinable.prototype );
+InputControl.prototype = Object.create( InputBase.prototype );
 InputControl.prototype.constructor = InputControl;
 module.exports = InputControl;
 
@@ -480,6 +472,7 @@ InputControl.prototype.textWidth = function(text) {
     }
 };
 
+InputControl.prototype.inputBaseFocus = InputBase.prototype.focus;
 /**
  * focus on this input and set it as current
  *
@@ -498,25 +491,20 @@ InputControl.prototype.focus = function () {
 
     // set focus
     InputControl.currentInput = this;
-    this.hasFocus = true;
+    console.log("focus", this.text);
 
     // update the hidden input text, type, maxchars
     KeyboardManager.wrapper.text = this.value;
     KeyboardManager.wrapper.type = this._inputType;
     this.maxChars = this._maxChars;
 
-    this.emit('focusIn', this);
-
     KeyboardManager.wrapper.focus(this.wrapperType);
+    this.inputBaseFocus();
+    this._cursorNeedsUpdate = true;
 };
 
-InputControl.prototype.onMouseUpOutside = function() {
-    if(this.hasFocus && !this._mouseDown) {
-        this.blur();
-    }
-    this._mouseDown = false;
-};
 
+InputControl.prototype.inputBaseBlur = InputBase.prototype.blur;
 /**
  * blur the text input (remove focus)
  *
@@ -525,11 +513,12 @@ InputControl.prototype.onMouseUpOutside = function() {
 InputControl.prototype.blur = function() {
     if (InputControl.currentInput === this) {
         InputControl.currentInput = null;
-        this.hasFocus = false;
-
+        this.inputBaseBlur();
+        console.log("blur", this.text);
         // blur hidden input (if DOMInputWrapper is used)
         KeyboardManager.wrapper.blur();
-        this.onblur();
+        this._selectionNeedsUpdate = true;
+        this._cursorNeedsUpdate = true;
     }
 };
 
@@ -552,7 +541,7 @@ InputControl.prototype.lineHeight = function() {
  */
 InputControl.prototype.drawCursor = function () {
     // TODO: use Tween instead!
-    if (this.hasFocus || this._mouseDown) {
+    if (this.hasFocus) {
         var time = Date.now();
 
         // blink interval for cursor
@@ -594,6 +583,8 @@ InputControl.prototype.onMove = function (e) {
     return true;
 };
 
+InputControl.prototype.inPutBaseOnDown = InputBase.prototype.onDown;
+
 InputControl.prototype.onDown = function (e) {
     if (this.autoPreventInteraction) {
         e.stopPropagation();
@@ -606,10 +597,10 @@ InputControl.prototype.onDown = function (e) {
         return false;
     }
 
-    // focus input
-    this.focus();
-
-    this._mouseDown = true;
+    // // focus input
+    // this.focus();
+    // this._mouseDown = true;
+    this.inPutBaseOnDown();
 
     // start the selection drag if inside the input
     // TODO: move to wrapper
@@ -621,9 +612,9 @@ InputControl.prototype.onDown = function (e) {
     }
     this._cursorNeedsUpdate = true;
 
-    this.on('touchend', this.onUp, this);
-    this.on('mouseupoutside', this.onUp, this);
-    this.on('mouseup', this.onUp, this);
+    // this.on('touchend', this.onUp, this);
+    // this.on('mouseupoutside', this.onUp, this);
+    // this.on('mouseup', this.onUp, this);
 
     this.on('mousemove', this.onMove, this);
     this.on('touchmove', this.onMove, this);
@@ -634,6 +625,8 @@ InputControl.prototype.onDown = function (e) {
 
     return true;
 };
+
+InputControl.prototype.inputBaseOnUp = InputBase.prototype.onUp;
 
 InputControl.prototype.onUp = function (e) {
     if (this.autoPreventInteraction) {
@@ -647,11 +640,11 @@ InputControl.prototype.onUp = function (e) {
     }
 
     KeyboardManager.wrapper.selectionStart = 0;
-    this._mouseDown = false;
+    this.inputBaseOnUp();
 
-    this.off('touchend', this.onUp, this);
-    this.off('mouseupoutside', this.onUp, this);
-    this.off('mouseup', this.onUp, this);
+    // this.off('touchend', this.onUp, this);
+    // this.off('mouseupoutside', this.onUp, this);
+    // this.off('mouseup', this.onUp, this);
 
     this.off('mousemove', this.onMove, this);
     this.off('touchmove', this.onMove, this);
@@ -732,23 +725,12 @@ InputControl.prototype.pixelToTextPos = function(pixelPos) {
     return textPos;
 };
 
-/**
- * callback that will be executed once the text input is blurred
- *
- * @method onblur
- */
-InputControl.prototype.onblur = function() {
-    this._selectionNeedsUpdate = true;
-    this.emit('focusOut', this);
-};
 
 // performance increase to avoid using call.. (10x faster)
 InputControl.prototype.redrawSkinable = Skinable.prototype.redraw;
 InputControl.prototype.redraw = function () {
     // TODO: do NOT use redraw for this but events on the InputWrapper instead!
-    if (this.drawCursor) {
-        this.drawCursor();
-    }
+    this.drawCursor();
     // TODO: do NOT use redraw for this but events on the InputWrapper instead!
     if (this._selectionNeedsUpdate) {
         this.updateSelectionBg();
@@ -759,22 +741,6 @@ InputControl.prototype.redraw = function () {
     }
     this.redrawSkinable();
 };
-
-
-/**
- * determine if the input has the focus
- *
- * @property hasFocus
- * @type Boolean
- */
-Object.defineProperty(InputControl.prototype, 'hasFocus', {
-    get: function() {
-        return this._hasFocus;
-    },
-    set: function(focus) {
-        this._hasFocus = focus;
-    }
-});
 
 /**
  * set text style (size, font etc.) for text and cursor
@@ -825,3 +791,12 @@ Object.defineProperty(InputControl.prototype, 'currentState',{
         this.invalidState = true;
     }
 });
+
+InputControl.prototype.adjustScrollY = function(screenHeight, keyboardHeight) {
+    var global = this.toGlobal(new PIXI.Point(0, 0));
+    if (global.y + this.height > screenHeight - keyboardHeight){
+        return global.y + this.height + keyboardHeight - screenHeight;
+    }else {
+        return 0;
+    }
+};
