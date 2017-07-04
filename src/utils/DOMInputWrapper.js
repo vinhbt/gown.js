@@ -25,6 +25,7 @@ function DOMInputWrapper(manager) {
     this.selectionStart = 0;
     this.cursorPos = 0;
     this._maxChars = 0;
+    this.eventsAdded = [];
 }
 DOMInputWrapper.prototype = Object.create( InputWrapper.prototype );
 DOMInputWrapper.prototype.constructor = DOMInputWrapper;
@@ -80,7 +81,8 @@ DOMInputWrapper.prototype.hideInput = function(domInput) {
  * add keyboard events for DOM elements
  */
 DOMInputWrapper.prototype.addEventListener = function(domInput) {
-    if (!this.eventsAdded) {
+    if (this.eventsAdded.indexOf(this.tagName) < 0 ) {
+        this.eventsAdded.push(this.tagName);
         this._onKeyDown = this.onKeyDown.bind(this);
         this._onKeyUp = this.onKeyUp.bind(this);
         // add blur handler
@@ -89,14 +91,15 @@ DOMInputWrapper.prototype.addEventListener = function(domInput) {
         domInput.addEventListener('keyup', this._onKeyUp);
         domInput.addEventListener('keydown', this._onKeyDown);
     }
-    this.eventsAdded = true;
+    //this.eventsAdded = true;
 };
 
 /**
  * remove keyboard events for DOM elements
  */
 DOMInputWrapper.prototype.removeEventListener = function(domInput) {
-    if (this.eventsAdded) {
+    if (this.eventsAdded.indexOf(this.tagName) >= 0) {
+        this.eventsAdded.splice(this.eventsAdded.indexOf(this.tagName), 1);
         // add blur handler
         domInput.removeEventListener('blur', this.onBlur, false);
         // on key up
@@ -106,7 +109,7 @@ DOMInputWrapper.prototype.removeEventListener = function(domInput) {
         this._onKeyDown = null;
         this._onKeyUp = null;
     }
-    this.eventsAdded = false;
+    //this.eventsAdded = false;
 };
 
 DOMInputWrapper.prototype.onBlur = function() {
@@ -120,7 +123,6 @@ DOMInputWrapper.prototype.onKeyUp = function(event) {
 };
 
 DOMInputWrapper.prototype.onKeyDown = function (event) {
-    console.log("DOMInputWrapper.prototype.onKeyDown:", this.text);
     this.manager._keyDownEvent(event);
 };
 
@@ -164,12 +166,10 @@ DOMInputWrapper.blur = function() {
 Object.defineProperty(DOMInputWrapper.prototype, 'text',{
     get: function() {
         var textProp = DOMInputWrapper.textProp;
-        console.log(DOMInputWrapper.hiddenInput[this.tagName]);
         var txt = DOMInputWrapper.hiddenInput[this.tagName][textProp];
         return txt.replace(/\r/g, '');
     },
     set: function(value) {
-        console.log("set text:" +  value);
         var textProp = DOMInputWrapper.textProp;
         DOMInputWrapper.hiddenInput[this.tagName][textProp] = value;
     }
