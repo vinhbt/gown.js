@@ -23,7 +23,6 @@ function DOMInputWrapper(manager) {
 
     this.tagName = 'input';
     this.selectionStart = 0;
-    this.cursorPos = 0;
     this._maxChars = 0;
     this.eventsAdded = [];
 }
@@ -237,5 +236,26 @@ Object.defineProperty(DOMInputWrapper.prototype, 'maxChars', {
     }
 });
 
+/**
+ * set cursor position of the hidden input
+ */
+DOMInputWrapper.prototype.setCursorPos = function (pos) {
+    if (DOMInputWrapper.hiddenInput[this.tagName]) {
+        var elem = DOMInputWrapper.hiddenInput[this.tagName];
+        if(elem.createTextRange) {
+            var range = elem.createTextRange();
+            range.move('character', pos);
+            range.select();
+        }
+        else {
+            if(elem.selectionStart) {
+                elem.focus();
+                elem.setSelectionRange(pos, pos);
+            }
+            else
+                elem.focus();
+        }
+    }
+};
 
 

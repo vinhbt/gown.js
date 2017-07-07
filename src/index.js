@@ -62,6 +62,7 @@ if (typeof PIXI === 'undefined') {
     core.TextArea =               require('./controls/TextArea');
     core.ToggleButton =           require('./controls/ToggleButton');
     core.ToggleGroup =            require('./controls/ToggleGroup');
+    core.FocusGroup =             require('./controls/FocusGroup');
     core.DropDownList =           require('./controls/DropDownList');
     core.CheckBox =               require('./controls/CheckBox');
     core.ScrollArea =             require('./controls/ScrollArea');
