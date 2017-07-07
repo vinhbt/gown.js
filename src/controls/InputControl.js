@@ -51,6 +51,8 @@ function InputControl(theme, settings) {
 
     this.clippingInvalid = true;
 
+    this._offsetKeyBoard = 0;
+
 
     this.currentState = InputControl.UP;
 
@@ -793,10 +795,20 @@ Object.defineProperty(InputControl.prototype, 'currentState',{
     }
 });
 
+
+Object.defineProperty(InputControl.prototype, 'offsetKeyBoard',{
+    get: function() {
+        return this._offsetKeyBoard;
+    },
+    set: function(value) {
+        this._offsetKeyBoard = value;
+    }
+});
+
 InputControl.prototype.adjustScrollY = function(screenHeight, keyboardHeight) {
     var global = this.toGlobal(new PIXI.Point(0, 0));
-    if (global.y + this.height > screenHeight - keyboardHeight){
-        return global.y + this.height + keyboardHeight - screenHeight;
+    if (global.y + this.height > screenHeight - keyboardHeight - this.offsetKeyBoard){
+        return global.y + this.height + keyboardHeight + this.offsetKeyBoard - screenHeight;
     }else {
         return 0;
     }
