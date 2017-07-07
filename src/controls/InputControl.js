@@ -806,9 +806,9 @@ Object.defineProperty(InputControl.prototype, 'offsetKeyBoard',{
 });
 
 InputControl.prototype.adjustScrollY = function(screenHeight, keyboardHeight) {
-    var global = this.toGlobal(new PIXI.Point(0, 0));
+    var global = this.toGlobal(this.cursorView ? this.cursorView.position : new Point(0,0));
     if (global.y + this.height > screenHeight - keyboardHeight - this.offsetKeyBoard){
-        return global.y + this.height + keyboardHeight + this.offsetKeyBoard - screenHeight;
+        return -Math.min(screenHeight - (global.y + this.height + keyboardHeight + this.offsetKeyBoard) , screenHeight - keyboardHeight);
     }else {
         return 0;
     }
