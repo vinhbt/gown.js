@@ -23,7 +23,7 @@ function Scrollable(theme) {
     this._inverse = false;
     this._start = null;
     this._minimum = this._minimum || 0;
-    this._maximum = this._maximum || 100;
+    this._maximum = this._maximum || 0;
     this.step = this.step || 1; //TODO: implement me!
     this.page = this.page || 10; //TODO: implement me!
     this._value = this.minimum;

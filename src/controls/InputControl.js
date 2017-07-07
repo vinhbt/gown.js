@@ -492,7 +492,7 @@ InputControl.prototype.focus = function () {
     KeyboardManager.wrapper.text = this.value;
     KeyboardManager.wrapper.type = this._inputType;
     this.maxChars = this._maxChars;
-
+    if (this._prevSelection) KeyboardManager.wrapper.updateSelection(this._prevSelection[0], this._prevSelection[1]);
     KeyboardManager.wrapper.focus(this.wrapperType);
     this.inputBaseFocus();
     this._cursorNeedsUpdate = true;
@@ -507,6 +507,7 @@ InputControl.prototype.inputBaseBlur = InputBase.prototype.blur;
  */
 InputControl.prototype.blur = function() {
     if (InputControl.currentInput === this) {
+        this._prevSelection = KeyboardManager.wrapper.selection;
         InputControl.currentInput = null;
         this.inputBaseBlur();
         console.log("blur", this.text);

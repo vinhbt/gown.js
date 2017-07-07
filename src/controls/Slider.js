@@ -41,7 +41,7 @@ Object.defineProperty(Slider.prototype, 'value', {
         if (this._value === value) {
             return;
         }
-        var pos = Math.floor(value);
+        var pos = Math.round(value);
         var posNext = pos + this.step;
         var posPrev = pos - this.step;
 
