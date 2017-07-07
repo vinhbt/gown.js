@@ -508,10 +508,9 @@ InputControl.prototype.inputBaseBlur = InputBase.prototype.blur;
 InputControl.prototype.blur = function() {
     if (InputControl.currentInput === this) {
         InputControl.currentInput = null;
-        this.inputBaseBlur();
-        console.log("blur", this.text);
         // blur hidden input (if DOMInputWrapper is used)
-        KeyboardManager.wrapper.blur();
+        if (this.hasFocus) KeyboardManager.wrapper.blur();
+        this.inputBaseBlur();
         this._selectionNeedsUpdate = true;
         this._cursorNeedsUpdate = true;
     }
@@ -614,8 +613,9 @@ InputControl.prototype.onDown = function (e) {
     // this.on('mouseupoutside', this.onUp, this);
     // this.on('mouseup', this.onUp, this);
 
-    this.on('mousemove', this.onMove, this);
-    this.on('touchmove', this.onMove, this);
+    //console.log("add onMove");
+    //this.on('pointermove', this.onMove, this);
+    //this.on('touchmove', this.onMove, this);
 
     // update cursor position
     KeyboardManager.wrapper.cursorPos = KeyboardManager.wrapper.selectionStart;
@@ -643,9 +643,8 @@ InputControl.prototype.onUp = function (e) {
     // this.off('touchend', this.onUp, this);
     // this.off('mouseupoutside', this.onUp, this);
     // this.off('mouseup', this.onUp, this);
-
-    this.off('mousemove', this.onMove, this);
-    this.off('touchmove', this.onMove, this);
+    //this.off('pointermove', this.onMove, this);
+    //this.off('touchmove', this.onMove, this);
 
     return true;
 };

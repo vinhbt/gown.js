@@ -14,9 +14,9 @@ var mixin = require('../utils/mixin');
 function Control() {
     PIXI.Container.call(this);
     //this.enabled = this.enabled !== false;
-    this._enabled = true;
-    // assume all controls are interactive
-    this.interactive = true;
+    this.enabled = true;
+    // // assume all controls are interactive
+    // this.interactive = true;
 
     this.initResizeScaling();
 }
