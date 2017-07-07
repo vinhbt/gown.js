@@ -91,6 +91,7 @@ function InputControl(theme, settings) {
         KeyboardManager.wrapper.createInput(this.settings.type);
         this.wrapperType = this.settings.type;
     }
+    this.cursorPos = 0;
 
     this._prevSelection = KeyboardManager.wrapper.selection;
 
@@ -236,7 +237,7 @@ InputControl.prototype.onInputChanged = function () {
             this._prevSelection = KeyboardManager.wrapper.selection;
         }
     }
-    KeyboardManager.wrapper.cursorPos = KeyboardManager.wrapper.selection[0];
+    this.cursorPos = KeyboardManager.wrapper.selection[0];
     this.setCursorPos();
 };
 
@@ -294,7 +295,7 @@ InputControl.prototype.refreshMask = function () {
  * position cursor on the text
  */
 InputControl.prototype.setCursorPos = function () {
-    this.textToPixelPos(KeyboardManager.wrapper.cursorPos, this.cursorView.position);
+    this.textToPixelPos(this.cursorPos, this.cursorView.position);
 
     if (this.settings.mode !== 'textarea') {
         if (this.cursorView.position.x + this.cursorView.width > this.innerContainer.mask.width) {
@@ -419,8 +420,8 @@ Object.defineProperty(InputControl.prototype, 'maxChars', {
         this._maxChars = value;
         if (this.pixiText && value && this.pixiText.text > value) {
             this.pixiText.text = this.pixiText.text.substring(0, value);
-            if (KeyboardManager.wrapper.cursorPos > value) {
-                KeyboardManager.wrapper.cursorPos = value;
+            if (this.cursorPos > value) {
+                this.cursorPos = value;
                 this._cursorNeedsUpdate = true;
             }
         }
@@ -486,7 +487,7 @@ InputControl.prototype.focus = function () {
 
     // set focus
     InputControl.currentInput = this;
-    console.log("focus", this.text);
+    console.log("focus", this.text, this.cursorPos);
 
     // update the hidden input text, type, maxchars
     KeyboardManager.wrapper.text = this.value;
@@ -494,8 +495,14 @@ InputControl.prototype.focus = function () {
     this.maxChars = this._maxChars;
 
     KeyboardManager.wrapper.focus(this.wrapperType);
+    // update cursor position
+    if (!this._mouseDown) {
+        console.log("focus", this.cursorPos);
+        this.setCursorPos();
+        this._cursorNeedsUpdate = true;
+        KeyboardManager.wrapper.setCursorPos(this.cursorPos);
+    }
     this.inputBaseFocus();
-    this._cursorNeedsUpdate = true;
 };
 
 
@@ -574,7 +581,8 @@ InputControl.prototype.onMove = function (e) {
     if (KeyboardManager.wrapper.updateSelection(start, end)) {
         this._cursorNeedsUpdate = true;
         this._selectionNeedsUpdate = true;
-        KeyboardManager.wrapper.cursorPos = curPos;
+        this._prevSelection = KeyboardManager.wrapper.selection;
+        this.cursorPos = curPos;
         this.setCursorPos();
     }
     return true;
@@ -593,12 +601,6 @@ InputControl.prototype.onDown = function (e) {
         originalEvent.preventDefault();
         return false;
     }
-
-    // // focus input
-    // this.focus();
-    // this._mouseDown = true;
-    this.inPutBaseOnDown();
-
     // start the selection drag if inside the input
     // TODO: move to wrapper
     KeyboardManager.wrapper.selectionStart = this.pixelToTextPos(mouse);
@@ -607,20 +609,10 @@ InputControl.prototype.onDown = function (e) {
             KeyboardManager.wrapper.selectionStart)) {
         this._selectionNeedsUpdate = true;
     }
-    this._cursorNeedsUpdate = true;
-
-    // this.on('touchend', this.onUp, this);
-    // this.on('mouseupoutside', this.onUp, this);
-    // this.on('mouseup', this.onUp, this);
-
-    //console.log("add onMove");
-    //this.on('pointermove', this.onMove, this);
-    //this.on('touchmove', this.onMove, this);
-
-    // update cursor position
-    KeyboardManager.wrapper.cursorPos = KeyboardManager.wrapper.selectionStart;
+    this.cursorPos = KeyboardManager.wrapper.selectionStart;
     this.setCursorPos();
-
+    this._cursorNeedsUpdate = true;
+    this.inPutBaseOnDown();
     return true;
 };
 
@@ -639,12 +631,6 @@ InputControl.prototype.onUp = function (e) {
 
     KeyboardManager.wrapper.selectionStart = 0;
     this.inputBaseOnUp();
-
-    // this.off('touchend', this.onUp, this);
-    // this.off('mouseupoutside', this.onUp, this);
-    // this.off('mouseup', this.onUp, this);
-    //this.off('pointermove', this.onMove, this);
-    //this.off('touchmove', this.onMove, this);
 
     return true;
 };
