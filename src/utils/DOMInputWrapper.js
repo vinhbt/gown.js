@@ -178,8 +178,13 @@ Object.defineProperty(DOMInputWrapper.prototype, 'text',{
 DOMInputWrapper.prototype.updateSelection = function(start, end) {
     if (DOMInputWrapper.hiddenInput[this.tagName].selectionStart !== start ||
         DOMInputWrapper.hiddenInput[this.tagName].selectionEnd !== end) {
-        DOMInputWrapper.hiddenInput[this.tagName].selectionStart = start;
-        DOMInputWrapper.hiddenInput[this.tagName].selectionEnd = end;
+        if(start < end) {
+            DOMInputWrapper.hiddenInput[this.tagName].selectionStart = start;
+            DOMInputWrapper.hiddenInput[this.tagName].selectionEnd = end;
+        } else {
+            DOMInputWrapper.hiddenInput[this.tagName].selectionStart = end;
+            DOMInputWrapper.hiddenInput[this.tagName].selectionEnd = start;
+        }
         return true;
     } else{
         return false;
