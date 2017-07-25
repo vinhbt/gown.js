@@ -126,6 +126,8 @@ function InputControl(theme, settings) {
 
     this.text = this.settings.text || '';
 
+    this.inputChangeEvent = this.onInputChanged.bind(this);
+
     // add events to listen to react to the Keyboard- and InteractionManager
     this.addEvents();
 
@@ -213,8 +215,8 @@ InputControl.prototype.onKeyDown = function () {
 };
 
 InputControl.prototype.addEvents = function() {
-    this.on('keyup', this.onInputChanged.bind(this));
-    this.on('keydown', this.onInputChanged.bind(this));
+    this.on('keyup', this.inputChangeEvent);
+    this.on('keydown', this.inputChangeEvent);
 };
 
 InputControl.prototype.onInputChanged = function () {

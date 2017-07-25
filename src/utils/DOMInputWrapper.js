@@ -87,8 +87,8 @@ DOMInputWrapper.prototype.addEventListener = function(domInput) {
         // add blur handler
         domInput.addEventListener('blur', this.onBlur, false);
         // on key up
-        domInput.addEventListener('keyup', this._onKeyUp);
-        domInput.addEventListener('keydown', this._onKeyDown);
+        document.addEventListener('keyup', this._onKeyUp);
+        document.addEventListener('keydown', this._onKeyDown);
     }
     //this.eventsAdded = true;
 };
@@ -102,8 +102,8 @@ DOMInputWrapper.prototype.removeEventListener = function(domInput) {
         // add blur handler
         domInput.removeEventListener('blur', this.onBlur, false);
         // on key up
-        domInput.removeEventListener('keyup', this._onKeyUp);
-        domInput.removeEventListener('keydown', this._onKeyDown);
+        document.removeEventListener('keyup', this._onKeyUp);
+        document.removeEventListener('keydown', this._onKeyDown);
 
         this._onKeyDown = null;
         this._onKeyUp = null;

@@ -1,6 +1,7 @@
 var EventEmitter = require('eventemitter3');
 var DOMInputWrapper = require('../utils/DOMInputWrapper');
 var KeyboardInputWrapper = require('../utils/KeyboardInputWrapper');
+var InputController = require('../interaction/InputController');
 
 /**
  * The keyboard manager deals with key events. Any DisplayObject can be interactive
@@ -76,6 +77,8 @@ module.exports = KeyboardManager;
  */
 KeyboardManager.prototype._keyDownEvent = function(event) {
     this._keyEvent(event, 'keydown');
+    // handle for some special key.
+    InputController.keyDownEvent(event);
 };
 
 /**

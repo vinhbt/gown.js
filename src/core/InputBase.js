@@ -4,18 +4,20 @@ var Skinable = require('./Skinable'),
 function InputBase(theme, settings) {
     settings = settings || {};
     this.stage = null;
-    this._useTab = this._usePrev = this._useNext = (settings.useTab || true);
+    this._useTab = (settings.useTab || true);
     this._hasFocus = settings.hasFocus || false;
     this._mouseDown = false;
     this._tabIndex = settings.tabIndex || -1;
-    this._focusGroup = settings.focusGroup || null;
+    this._tabGroup = settings._tabGroup || null;
+    this._enterFunction = null;
+
     Skinable.call(this, theme);
 
     this.on("pointerdown", this.onDown, this);
 
     this.on("pointerupoutside", this.onMouseUpOutside, this);
 
-    this.handleKeyDown = this.keyDownEvent.bind(this);
+   // this.handleKeyDown = this.keyDownEvent.bind(this);
 
 }
 
@@ -34,20 +36,21 @@ InputBase.FocusOut = 'focusOut';
  */
 Object.defineProperty(InputBase.prototype, 'focusGroup', {
     get: function() {
-        return this._focusGroup;
+        return this._tabGroup;
     },
     set: function(focusGroup) {
-        this._focusGroup = focusGroup;
+        this._tabGroup = focusGroup;
     }
 });
 
-InputBase.prototype.setTabInfo = function (tabIndex, focusGroup) {
-    if (this.focusGroup === focusGroup) return;
-    if (focusGroup) {
-        focusGroup.addItem(this, tabIndex);
+Object.defineProperty(InputBase.prototype, 'enterFunction', {
+    get: function() {
+        return this._enterFunction;
+    },
+    set: function(enterFunction) {
+        this._enterFunction = enterFunction;
     }
-    this.focusGroup = focusGroup;
-};
+});
 
 InputBase.prototype.stageMouseDown = function(e) {
     console.log("stageMouseDown", e);
@@ -65,33 +68,32 @@ InputBase.prototype.onMouseUpOutside = function(e) {
     }
 };
 
-InputBase.prototype.keyDownEvent = function (e) {
-
-    if (e.which === 9) {
-        if (this._useTab && this.focusGroup) {
-            this.focusGroup.fireTab();
-            e.preventDefault();
-        }
-    }
-    else if (e.which === 38) {
-        if (this._usePrev && this.focusGroup) {
-            this.focusGroup.firePrev();
-            e.preventDefault();
-        }
-    }
-    else if (e.which === 40) {
-        if (this._useNext && this.focusGroup) {
-            this.focusGroup.fireNext();
-            e.preventDefault();
-        }
-    }
-};
+// InputBase.prototype.keyDownEvent = function (e) {
+//
+//     if (e.which === 9) {
+//         if (this._useTab && this.focusGroup) {
+//             this.focusGroup.fireTab();
+//             e.preventDefault();
+//         }
+//     }
+//     else if (e.which === 38) {
+//         if (this._usePrev && this.focusGroup) {
+//             this.focusGroup.firePrev();
+//             e.preventDefault();
+//         }
+//     }
+//     else if (e.which === 40) {
+//         if (this._useNext && this.focusGroup) {
+//             this.focusGroup.fireNext();
+//             e.preventDefault();
+//         }
+//     }
+// };
 
 
 InputBase.prototype.onDown = function(e) {
     this._mouseDown = true;
     console.log('onDown');
-    //this._clearEvents();
     this.on("pointerup", this.onUp, this);
     this.on("pointermove", this.onMove, this);
     this.focus();
@@ -112,14 +114,14 @@ InputBase.prototype.focus = function () {
     if (!this._hasFocus) {
         this._hasFocus = true;
         this._bindEvents();
-        if (this.focusGroup) this.focusGroup.set(this);
+        InputController.set(this);
         this.emit(InputBase.FocusIn);
     }
 };
 
 InputBase.prototype.blur = function () {
     if (this._hasFocus) {
-        if (this.focusGroup) this.focusGroup.clear();
+        InputController.clear();
         this._hasFocus = false;
         this._clearEvents();
         this.emit(InputBase.FocusOut);
@@ -155,23 +157,19 @@ InputBase.prototype._rootStage = function () {
 };
 
 InputBase.prototype._bindEvents = function () {
-    console.log("_bindEvents");
     if (!this.stage) {
         this.stage = this._rootStage();
     }
     if (this.stage !== null) {
-        console.log("_bindEvents Ok");
         this.stage.interactive = true;
         this.stage.on("pointerdown", this.stageMouseDown, this);
-        document.addEventListener("keydown", this.handleKeyDown);
+        //document.addEventListener("keydown", this.handleKeyDown);
     }
 };
 
 InputBase.prototype._clearEvents = function () {
-    console.log("_clearEvents onUp");
     if (this.stage !== null) {
-        console.log('remove event');
         this.stage.off("pointerdown", this.stageMouseDown, this);
-        document.removeEventListener("keydown", this.handleKeyDown);
+        //document.removeEventListener("keydown", this.handleKeyDown);
     }
 };

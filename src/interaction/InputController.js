@@ -1,10 +1,8 @@
 ﻿var _currentItem;
 var tabGroups = {};
-var checkGroups = {};
-var checkGroupValues = {};
 
 var InputController = {
-    registrer: function (item, tabIndex, tabGroup) {
+    register: function (item, tabIndex, tabGroup) {
         var groupName = tabGroup || "default";
 
         var items = tabGroups[groupName];
@@ -14,7 +12,7 @@ var InputController = {
         var i = items.indexOf(item);
         if (i === -1) {
             item._tabIndex = tabIndex !== undefined ? tabIndex : -1;
-            item._tabGroup = items;
+            item._tabGroup = tabGroup;
             items.push(item);
             items.sort(function (a, b) {
                 if (a._tabIndex < b._tabIndex)
@@ -25,67 +23,127 @@ var InputController = {
             });
         }
     },
+    remove: function (groupName) {
+        var items = tabGroups[groupName];
+        if (!items) {
+            if (_currentItem && items.indexOf(_currentItem) > 0){
+                _currentItem = undefined;
+            }
+            delete tabGroups[groupName];
+        }
+    },
     set: function (item) {
         if (_currentItem && typeof _currentItem.blur === "function")
             _currentItem.blur();
         _currentItem = item;
+    },
+    items: function () {
+        if (_currentItem && _currentItem._tabGroup){
+            return tabGroups[_currentItem._tabGroup];
+        }
+        return [];
+    },
+    findNextItem: function () {
+        if (_currentItem && _currentItem._tabGroup){
+            var items = tabGroups[_currentItem._tabGroup];
+            var count = 0, found = false;
+            var i = items.indexOf(_currentItem);
+            while (count < items.length && !found) {
+                count ++;
+                i++;
+                if (i >= items.length) i = 0;
+                if (items[i].enabled && items[i]._useTab && typeof items[i].focus === "function"){
+                    found = true;
+                }
+            }
+            if (found) {
+                return tabGroups[_currentItem._tabGroup][i];
+            }
+        }
+        return null;
+    },
+    findPrevItem: function () {
+        if (_currentItem && _currentItem._tabGroup){
+            var items = tabGroups[_currentItem._tabGroup];
+            var count = 0, found = false;
+            var i = items.indexOf(_currentItem);
+            while (count < items.length && !found) {
+                count ++;
+                i--;
+                if (i < 0) i = items.length - 1;
+                if (items[i].enabled && items[i]._useTab && typeof items[i].focus === "function"){
+                    found = true;
+                }
+            }
+            if (found) {
+                return tabGroups[_currentItem._tabGroup][i];
+            }
+        }
+        return null;
     },
     clear: function () {
         _currentItem = undefined;
     },
     fireTab: function () {
         if (_currentItem) {
-            var i = _currentItem._tabGroup.indexOf(_currentItem) + 1;
-            if (i >= _currentItem._tabGroup.length) i = 0;
-            _currentItem._tabGroup[i].focus();
+            var item = InputController.findNextItem();
+            if (item){
+                item.focus();
+                return true;
+            }
         }
+        return false;
     },
     fireNext: function () {
         if (_currentItem) {
-            var i = _currentItem._tabGroup.indexOf(_currentItem) + 1;
-            if (i >= _currentItem._tabGroup.length) i = _currentItem._tabGroup.length - 1;
-            _currentItem._tabGroup[i].focus();
+            var item = InputController.findNextItem();
+            if (item){
+                item.focus();
+                return true;
+            }
         }
+        return false;
     },
     firePrev: function () {
         if (_currentItem) {
-            var i = _currentItem._tabGroup.indexOf(_currentItem) - 1;
-            if (i < 0) i = 0;
-            _currentItem._tabGroup[i].focus();
+            var item = InputController.findPrevItem();
+            if (item){
+                item.focus();
+                return true;
+            }
         }
+        return false;
     },
-    registrerCheckGroup: function (cb) {
-        var name = cb.checkGroup;
-        var group = checkGroups[name];
-        if (!group) group = checkGroups[name] = {};
-        group[cb.value] = cb;
-
-        if (cb.checked)
-            checkGroupValues[name] = cb.value;
-    },
-    updateCheckGroupSelected: function (cb) {
-        var group = checkGroups[cb.checkGroup];
-        for (var val in group) {
-            var b = group[val];
-            if (b !== cb)
-                b.checked = false;
+    enter: function () {
+        if (_currentItem && _currentItem.enterFunction !== null) {
+            _currentItem.enterFunction();
+            return true;
         }
-        checkGroupValues[cb.checkGroup] = cb.value;
+        return false;
     },
-    getCheckGroupSelectedValue: function (name) {
-        if (checkGroupValues[name])
-            return checkGroupValues[name];
-        return "";
-    },
-    setCheckGroupSelectedValue: function (name, val) {
-        var group = checkGroups[name];
-        if (group) {
-            var cb = group[val];
-            if (cb) {
-                cb.checked = true;
+    keyDownEvent: function (e) {
+        if (e.which === 9) {
+            if (InputController.fireTab()) {
+                e.preventDefault();
+            }
+        }
+        else if (e.which === 38) {
+            if (InputController.firePrev()) {
+                e.preventDefault();
+            }
+        }
+        else if (e.which === 40) {
+            if (InputController.fireNext()) {
+                e.preventDefault();
+            }
+        }
+        else if (e.which === 13){
+            if (InputController.enter()) {
+                e.preventDefault();
             }
         }
     }
 };
+
 
 module.exports = InputController;
