@@ -54,6 +54,7 @@ DOMInputWrapper.prototype.createInput = function(tagName) {
     if (!DOMInputWrapper.hiddenInput[tagName]) {
         var domInput = document.createElement(tagName);
         domInput.setAttribute("type", "text");
+        domInput.setAttribute("autocapitalize", "none");
         document.body.appendChild(domInput);
         this.hideInput(domInput);
         this.addEventListener(domInput);
