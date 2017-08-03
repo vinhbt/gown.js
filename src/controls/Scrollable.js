@@ -83,6 +83,7 @@ Scrollable.prototype.createThumb = function() {
     this._thumbFactory = this._thumbFactory || this.defaultThumbFactory;
     this.thumb = this._thumbFactory();
     this.addChild(this.thumb);
+    this.thumb.interactive = this.interactive;
     this.positionThumb(this.value);
 };
 
@@ -528,6 +529,19 @@ Object.defineProperty(Scrollable.prototype, 'maximum', {
         }
         if (this._value > this.maximum) {
             this.value = maximum;
+        }
+    }
+});
+
+Object.defineProperty(Scrollable.prototype, 'enabled', {
+    get: function() {
+        return this._enabled;
+    },
+    set: function(value) {
+        this._enabled = value;
+        this.interactive = value;
+        if(this.thumb){
+            this.thumb.interactive = value;
         }
     }
 });

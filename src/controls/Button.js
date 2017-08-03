@@ -212,6 +212,7 @@ Object.defineProperty(Button.prototype, 'enabled', {
         return this._enabled;
     },
     set: function (is) {
+        if(this.labelText) this.labelText.interactive = is;
         this._enabled = this.interactive = is;
 
         if (!is) this.currentState = Button.DISABLE;
@@ -298,6 +299,7 @@ Button.prototype.createLabel = function() {
             this._label,
             this.textStyle || this.theme.textStyle.clone());
         this.addChild(this.labelText);
+        this.labelText.interactive = true;
     }
     this.updateLabelDimensions();
     this.updateLabel = false;
