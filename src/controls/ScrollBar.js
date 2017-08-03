@@ -67,12 +67,12 @@ ScrollBar.prototype.thumbMoved = function(x, y) {
     if (this.container && this.container.viewPort) {
         if(this.container.viewPort.layout.alignment === 'vertical'){
             this.container.updateVerticalScrollFromTouchPosition(
-                -(this.container.viewPort.height - this.container.height) * (y / (this.container.height - this.thumb.height)),
+                -(this.container.viewPort.height - this.container.height) * (y / (this.height - this.thumb.height)),
                 true
             );
         }else {
             this.container.updateHorizontalScrollFromTouchPosition(
-                -(this.container.viewPort.width - this.container.width) * (x / (this.container.width - this.thumb.width))
+                -(this.container.viewPort.width - this.container.width) * (x / (this.width - this.thumb.width))
             );
         }
     }
