@@ -403,6 +403,13 @@ Object.defineProperty(InputControl.prototype, 'text', {
         }
         this._origText = text;
         this.setPixiText(text);
+        if (KeyboardManager.wrapper.text !== text){
+            if (this.cursorPos > text.length){
+                this.cursorPos = text.length;
+                KeyboardManager.wrapper.setCursorPos(this.cursorPos);
+            }
+            KeyboardManager.wrapper.text = text;
+        }
 
         // reposition cursor
         this._cursorNeedsUpdate = true;
@@ -416,7 +423,7 @@ Object.defineProperty(InputControl.prototype, 'text', {
  *
  * @default 0
  * @property maxChars
- * @type String
+ * @type number
  */
 Object.defineProperty(InputControl.prototype, 'maxChars', {
     get: function () {
