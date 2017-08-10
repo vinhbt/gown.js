@@ -145,6 +145,7 @@ function Scroller(theme) {
     this._throwElasticity = 0.05;
 
     this.scrolldelta = 10;
+    this.scrollingFuc = undefined;
 }
 
 Scroller.prototype = Object.create(Control.prototype);
@@ -287,9 +288,6 @@ Object.defineProperty(Scroller.prototype, 'viewPort', {
     set: function (value) {
         if (this._viewPort === value) {
             return;
-        }
-        if (this._viewPort){
-            this.removeChild(this.viewPort);
         }
         this._viewPort = value;
         if (this._viewPort) {
@@ -570,7 +568,7 @@ Scroller.prototype.scrollToPageIndex = function (horizontalPageIndex, verticalPa
 Scroller.prototype.refreshInteractionModeEvents = function () {
     if (!this.startEventsAdded &&
         (this._interactionMode === Scroller.INTERACTION_TOUCH ||
-        this._interactionMode === Scroller.INTERACTION_TOUCH_AND_SCROLL_BARS)) {
+            this._interactionMode === Scroller.INTERACTION_TOUCH_AND_SCROLL_BARS)) {
         this.on('touchstart', this.onDown, this);
         this.on('mousedown', this.onDown, this);
         this.startEventsAdded = true;
@@ -597,6 +595,10 @@ Scroller.prototype.refreshInteractionModeEvents = function () {
 Scroller.prototype.onDown = function (event) {
     this._startTouch = event.data.getLocalPosition(this);
     this._isScrollingStopped = false;
+
+    if(this.scrollingFuc !== undefined && this._isScrolling){
+        this.scrollingFuc();
+    }
 
     if (!this.touchMoveEventsAdded) {
         this.on('touchend', this.onUp, this);
@@ -630,7 +632,7 @@ Scroller.prototype.checkForDrag = function (currentTouch) {
     var verticalMoved = Math.abs(currentTouch.y - this._startTouch.y);
 
     if ((this._horizontalScrollPolicy === Scroller.SCROLL_POLICY_ON ||
-        this._horizontalScrollPolicy === Scroller.SCROLL_POLICY_AUTO) &&
+            this._horizontalScrollPolicy === Scroller.SCROLL_POLICY_AUTO) &&
         !this._isDraggingHorizontally && horizontalMoved >= this.minimumDragDistance) {
         if (this.horizontalScrollBar) {
             this.revealHorizontalScrollBar();
@@ -644,7 +646,7 @@ Scroller.prototype.checkForDrag = function (currentTouch) {
 
     }
     if ((this._verticalScrollPolicy === Scroller.SCROLL_POLICY_ON ||
-        this._verticalScrollPolicy === Scroller.SCROLL_POLICY_AUTO) &&
+            this._verticalScrollPolicy === Scroller.SCROLL_POLICY_AUTO) &&
         !this._isDraggingVertically && verticalMoved >= this.minimumDragDistance) {
         if (this.verticalScrollBar) {
             this.revealVerticalScrollBar();
@@ -1004,7 +1006,7 @@ Scroller.prototype.calculateViewPortOffsetsForFixedVerticalScrollBar = function 
         this._hasVerticalScrollBar =
             forceScrollBars || this._verticalScrollPolicy === Scroller.SCROLL_POLICY_ON ||
             ((totalHeight > scrollerHeight || totalHeight > this._explicitMaxHeight) &&
-            this._verticalScrollPolicy !== Scroller.SCROLL_POLICY_OFF);
+                this._verticalScrollPolicy !== Scroller.SCROLL_POLICY_OFF);
     } else {
         this._hasVerticalScrollBar = false;
     }
@@ -1122,7 +1124,7 @@ Scroller.prototype.createScrollBars = function () {
         this.horizontalScrollBar = null;
     }
     if(this.verticalScrollBar) {
-        this.removeChild(this.verticalScrollBar);
+        // this.removeChild(this.verticalScrollBar);
         this.verticalScrollBar = null;
     }
     this.horizontalScrollBar = this._horizontalScrollBarFactory(Scrollable.HORIZONTAL);
@@ -1142,25 +1144,25 @@ Scroller.prototype.defaultScrollBarFactory = function (direction) {
 
 Scroller.prototype.revealHorizontalScrollBar = function () {
     if (this.horizontalScrollBar) {
-        this.addChild(this.horizontalScrollBar);
+        // this.addChild(this.horizontalScrollBar);
     }
 };
 
 Scroller.prototype.revealVerticalScrollBar = function () {
     if (this.verticalScrollBar) {
-        this.addChild(this.verticalScrollBar);
+        // this.addChild(this.verticalScrollBar);
     }
 };
 
 Scroller.prototype.hideHorizontalScrollBar = function () {
     if (this.horizontalScrollBar) {
-        this.removeChild(this.horizontalScrollBar);
+        // this.removeChild(this.horizontalScrollBar);
     }
 };
 
 Scroller.prototype.hideVerticalScrollBar = function () {
     if (this.verticalScrollBar) {
-        this.removeChild(this.verticalScrollBar);
+        // this.removeChild(this.verticalScrollBar);
     }
 };
 
@@ -1350,21 +1352,3 @@ Scroller.prototype.direction = function () {
     }
     return scroll;
 };
-
-Object.defineProperty(Scroller.prototype, 'startTouch', {
-    get: function() {
-        return this._startTouch;
-    },
-    set: function(value) {
-        this._startTouch = value;
-    }
-});
-
-Object.defineProperty(Scroller.prototype, 'isScrollingStopped', {
-    get: function() {
-        return this._isScrollingStopped;
-    },
-    set: function(value) {
-        this._isScrollingStopped = value;
-    }
-});

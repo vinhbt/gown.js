@@ -38,7 +38,8 @@ function Scrollable(theme) {
     this.on('touchendoutside', this.handleUp, this);
     this.on('mouseupoutside', this.handleUp, this);
     this.on('mouseup', this.handleUp, this);
-
+    this.scrollingFuc = undefined;
+    this._isScrolling = false;
     this.thumbFactoryInvalid = true;
 }
 
@@ -80,8 +81,8 @@ Scrollable.HORIZONTAL = 'horizontal';
 Scrollable.VERTICAL = 'vertical';
 
 Scrollable.prototype.createThumb = function() {
-    this._thumbFactory = this._thumbFactory || this.defaultThumbFactory;
-    this.thumb = this._thumbFactory();
+    this._thumbFactory = this._thumbFactory || this.defaultThumbFactory();
+    this.thumb = this._thumbFactory;
     this.addChild(this.thumb);
     this.thumb.interactive = this.interactive;
     this.positionThumb(this.value);
@@ -112,20 +113,24 @@ Scrollable.prototype.handleDown = function(mouseData) {
         this._start = [local.x, local.y];
         this.thumbMoved(center.x, center.y);
     }
+    this._isScrolling = true;
+    if(this.scrollingFuc !== undefined && this._isScrolling){
+        this.scrollingFuc();
+    }
 };
 
 /**
  * @private
  */
 Scrollable.prototype.decrement = function() {
-  this.value -= this._step;
+    this.value -= this._step;
 };
 
 /**
  * @private
  */
 Scrollable.prototype.increment = function() {
-  this.value += this._step;
+    this.value += this._step;
 };
 
 /**
@@ -135,6 +140,7 @@ Scrollable.prototype.increment = function() {
  */
 Scrollable.prototype.handleUp = function() {
     this._start = null;
+    this._isScrolling = false;
 };
 
 /**
@@ -543,5 +549,14 @@ Object.defineProperty(Scrollable.prototype, 'enabled', {
         if(this.thumb){
             this.thumb.interactive = value;
         }
+    }
+});
+
+Object.defineProperty(Scrollable.prototype, 'thumbFactory', {
+    get: function() {
+        return this._thumbFactory;
+    },
+    set: function(value) {
+        this._thumbFactory = value;
     }
 });

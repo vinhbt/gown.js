@@ -9,6 +9,8 @@ var Scroller = require('./Scroller');
 function ScrollContainer(theme) {
     Scroller.call(this, theme);
     this.sdScrollBar = undefined;
+    this.isScrollToEnd = false;
+    this.isEnding = true;
 }
 
 ScrollContainer.prototype = Object.create( Scroller.prototype );
@@ -16,14 +18,54 @@ ScrollContainer.prototype.constructor = ScrollContainer;
 module.exports = ScrollContainer;
 
 ScrollContainer.prototype.updateScrollBar = function() {
-    this.sdScrollBar.moveThumb(
-        Math.floor(
-            -this.viewPort.x / (this.viewPort.width - this.width) * (this.sdScrollBar.width - this.sdScrollBar.thumb.width)
-        ),
-        Math.floor(
-            -this.viewPort.y / (this.viewPort.height - this.height) * (this.sdScrollBar.height - this.sdScrollBar.thumb.height)
-        )
-    );
+    if(this !== undefined && this.sdScrollBar !== undefined && this.sdScrollBar.thumb !== undefined && this.viewPort !== undefined){
+        this.sdScrollBar.moveThumb(
+            Math.floor(
+                -this.viewPort.x / (this.viewPort.width - this.width) * (this.sdScrollBar.width - this.sdScrollBar.thumb.width)
+            ),
+            Math.floor(
+                -this.viewPort.y / (this.viewPort.height - this.height) * (this.sdScrollBar.height - this.sdScrollBar.thumb.height)
+            )
+        );
+        console.log("TEST: ", this.viewPort.y, (this.x + this.height - this.viewPort.height))
+    }
+};
+
+ScrollContainer.prototype.checkScrollisEnding = function () {
+    if(this.sdScrollBar !== undefined && this.sdScrollBar.thumb !== undefined && this.viewPort !== undefined && this !== undefined){
+        if(this.viewPort.y === this.x + this.height - this.viewPort.height){
+            this.isEnding = true;
+            return this.isEnding;
+        }
+        else {
+            this.isEnding = false;
+            return this.isEnding;
+        }
+    }
+    else{
+        this.isEnding = false;
+        return this.isEnding;
+    }
+};
+
+ScrollContainer.prototype.scrollToEnd = function() {
+    if(this.sdScrollBar !== undefined && this.sdScrollBar.thumb !== undefined && this.viewPort !== undefined && this !== undefined){
+        if(this.sdScrollBar.direction === 'vertical'){
+            this.viewPort.y = this.x + this.height - this.viewPort.height;
+            this.updateScrollBar();
+        }
+    }
+};
+
+ScrollContainer.prototype.checkNewContent = function () {
+    if(!this.isScrollToEnd && this.sdScrollBar.visible){
+        if(this !== undefined && this.viewPort !== undefined && this.sdScrollBar.direction === 'vertical'){
+            if(this.viewPort.y > this.x + this.height - this.viewPort.height){
+                return true;
+            }
+        }
+    }
+    return false;
 };
 
 ScrollContainer.prototype.scrollContainerCheckForDrag = Scroller.prototype.checkForDrag;
@@ -59,3 +101,7 @@ ScrollContainer.prototype.updateVerticalScrollFromTouchPosition = function (touc
     }
     this.verticalScrollPosition = position;
 };
+
+
+
+

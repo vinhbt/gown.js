@@ -25,6 +25,8 @@ function ScrollThumb(scrollable, theme, skinName) {
 
     Button.call(this, theme, this.skinName);
     this.invalidTrack = true;
+    this._isScrolling = false;
+    this.scrollingFuc = undefined;
 
     this.on('touchmove', this.handleMove, this);
     this.on('mousemove', this.handleMove, this);
@@ -50,7 +52,7 @@ ScrollThumb.THUMB_STATES = [
     'horizontal_up', 'vertical_up',
     'horizontal_down', 'vertical_down',
     'horizontal_hover', 'vertical_hover',
-    'horizontal_disable'
+    'horizontal_disable', 'vertical_disable'
 ];
 
 var originalCurrentState = Object.getOwnPropertyDescriptor(Button.prototype, 'currentState');
@@ -76,6 +78,10 @@ ScrollThumb.prototype.handleDown = function(mouseData) {
     this.scrollable._start = [local.x, local.y];
     //this.scrollable.handleDown(mouseData);
     mouseData.stopPropagation();
+    this._isScrolling = true;
+    if(this.scrollingFuc !== undefined && this._isScrolling){
+        this.scrollingFuc();
+    }
 };
 
 ScrollThumb.prototype.handleMove = function (mouseData) {
@@ -83,6 +89,7 @@ ScrollThumb.prototype.handleMove = function (mouseData) {
 };
 
 ScrollThumb.prototype.handleUp = function (mouseData) {
+    this._isScrolling = false;
     this.scrollable.handleUp(mouseData);
 };
 
