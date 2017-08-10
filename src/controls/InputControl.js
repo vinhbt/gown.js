@@ -105,6 +105,8 @@ function InputControl(theme, settings) {
     //SD: set style for text input
     this.style = this.settings.style || this.style || new ThemeFont();
 
+    this.colorCursor = this.colorCursor || 0x000000;
+
     this.cursorView = new PIXI.Graphics();
     this.cursorView.x = 0;
     this.cursorView.y = 0;
@@ -249,7 +251,7 @@ InputControl.prototype.initCursor = function() {
     if (this.cursorView) {
         this.cursorView.clear();
         this.cursorView._index = 0;
-        this.cursorView.lineStyle(this.settings.caretWidth || 2, "#ffffff", 1);
+        this.cursorView.lineStyle(this.settings.caretWidth || 2, this.colorCursor, 1);
         this.cursorView.moveTo(0, 2);
         var lineHeight = this.lineHeight();
         this.cursorView.lineTo(0, lineHeight);
@@ -401,6 +403,13 @@ Object.defineProperty(InputControl.prototype, 'text', {
         }
         this._origText = text;
         this.setPixiText(text);
+        if (KeyboardManager.wrapper.text !== text){
+            if (this.cursorPos > text.length){
+                this.cursorPos = text.length;
+                KeyboardManager.wrapper.setCursorPos(this.cursorPos);
+            }
+            KeyboardManager.wrapper.text = text;
+        }
 
         // reposition cursor
         this._cursorNeedsUpdate = true;
@@ -414,7 +423,7 @@ Object.defineProperty(InputControl.prototype, 'text', {
  *
  * @default 0
  * @property maxChars
- * @type String
+ * @type number
  */
 Object.defineProperty(InputControl.prototype, 'maxChars', {
     get: function () {
