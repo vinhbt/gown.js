@@ -27,24 +27,14 @@ ScrollContainer.prototype.updateScrollBar = function() {
                 -this.viewPort.y / (this.viewPort.height - this.height) * (this.sdScrollBar.height - this.sdScrollBar.thumb.height)
             )
         );
-        console.log("TEST: ", this.viewPort.y, (this.x + this.height - this.viewPort.height))
-    }
-};
-
-ScrollContainer.prototype.checkScrollisEnding = function () {
-    if(this.sdScrollBar !== undefined && this.sdScrollBar.thumb !== undefined && this.viewPort !== undefined && this !== undefined){
-        if(this.viewPort.y === this.x + this.height - this.viewPort.height){
-            this.isEnding = true;
-            return this.isEnding;
-        }
-        else {
-            this.isEnding = false;
-            return this.isEnding;
-        }
-    }
-    else{
-        this.isEnding = false;
-        return this.isEnding;
+        this.sdScrollBar.thumbMoved(
+            Math.floor(
+                -this.viewPort.x / (this.viewPort.width - this.width) * (this.sdScrollBar.width - this.sdScrollBar.thumb.width)
+            ),
+            Math.floor(
+                -this.viewPort.y / (this.viewPort.height - this.height) * (this.sdScrollBar.height - this.sdScrollBar.thumb.height)
+            )
+        );
     }
 };
 
