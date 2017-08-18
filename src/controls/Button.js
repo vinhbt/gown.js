@@ -24,9 +24,12 @@ function Button(theme, skinName) {
 
     this.on('touchstart', this.onDown, this);
     this.on('mousedown', this.onDown, this);
+    this.on('pointerdown', this.onDown, this);
 
     this.on('mouseover', this.onHover, this);
+    this.on('pointerover', this.onHover, this);
     this.on('touchmove', this.onTouchMove, this);
+    this.on('pointermove', this.onTouchMove, this);
 }
 
 Button.prototype = Object.create( Skinable.prototype );
@@ -141,9 +144,11 @@ Button.prototype.onDown = function() {
     this.on('touchend', this.onUp, this);
     this.on('mouseupoutside', this.onUp, this);
     this.on('mouseup', this.onUp, this);
+    this.on('pointerup', this.onUp, this);
 
     this.on('touchendoutside', this.onOut, this);
     this.on('mouseout', this.onOut, this);
+    this.on('pointerout', this.onOut, this);
 };
 
 Button.prototype.onUp = function() {
@@ -151,6 +156,7 @@ Button.prototype.onUp = function() {
     this.off('touchend', this.onUp, this);
     this.off('mouseupoutside', this.onUp, this);
     this.off('mouseup', this.onUp, this);
+    this.off('pointerup', this.onUp, this);
 };
 
 Button.prototype.onHover = function() {
@@ -163,6 +169,7 @@ Button.prototype.onOut = function() {
     this.handleEvent(Button.OUT);
     this.off('touchendoutside', this.onOut, this);
     this.off('mouseout', this.onOut, this);
+    this.off('pointerout', this.onOut, this);
 };
 
 Button.prototype.onTouchMove = function(eventData) {
