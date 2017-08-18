@@ -303,7 +303,7 @@ InputControl.prototype.refreshMask = function () {
 InputControl.prototype.setCursorPos = function () {
     this.textToPixelPos(this.cursorPos, this.cursorView.position);
 
-    if (this.settings.mode !== 'textarea') {
+    if (this.settings.mode !== 'textarea' && this.innerContainer.mask) {
         if (this.cursorView.position.x + this.cursorView.width > this.innerContainer.mask.width) {
             var delta = this.cursorView.position.x + this.cursorView.width - this.innerContainer.mask.width;
             this.pixiText.position.x -= delta - this.cursorView.width / 2;
