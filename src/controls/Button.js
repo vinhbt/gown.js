@@ -177,7 +177,7 @@ Button.prototype.onTouchMove = function(eventData) {
     // he is over the button, the button skin for "hovered" will be used.
     // In a mobile UI you might not want to have any hovered skins/use the
     // same skin for "hover" and "up".
-    if (eventData.data.target === this) {
+    if (eventData.data && eventData.data.target === this) {
         this.handleEvent(Button.HOVER);
     }
 };
