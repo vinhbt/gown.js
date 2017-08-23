@@ -28,21 +28,18 @@ function ScrollThumb(scrollable, theme, skinName) {
     this._isScrolling = false;
     this.scrollingFuc = undefined;
 
-    this.on('touchmove', this.handleMove, this);
     this.on('mousemove', this.handleMove, this);
     this.on('pointermove', this.handleMove, this);
 
 
     /* jshint unused: false */
-    this.on('touchdown', this.handleDown, this);
     this.on('mousedown', this.handleDown, this);
     this.on('pointerdown', this.handleDown, this);
     /* jshint unused: false */
 
     this.on('mouseup', this.handleUp, this);
-    this.on('touchend', this.handleUp, this);
     this.on('pointerup', this.handleUp, this);
-    this.on('touchendoutside', this.handleUp, this);
+    this.on('pointerupoutside', this.handleUp, this);
 }
 
 ScrollThumb.prototype = Object.create( Button.prototype );

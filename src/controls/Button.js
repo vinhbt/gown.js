@@ -22,13 +22,11 @@ function Button(theme, skinName) {
 
     this.handleEvent(Button.UP);
 
-    this.on('touchstart', this.onDown, this);
     this.on('mousedown', this.onDown, this);
     this.on('pointerdown', this.onDown, this);
 
     this.on('mouseover', this.onHover, this);
     this.on('pointerover', this.onHover, this);
-    this.on('touchmove', this.onTouchMove, this);
     this.on('pointermove', this.onTouchMove, this);
 }
 
@@ -141,33 +139,34 @@ Button.prototype.skinLoaded = function(skin) {
 
 Button.prototype.onDown = function() {
     this.handleEvent(Button.DOWN);
-    this.on('touchend', this.onUp, this);
     this.on('mouseupoutside', this.onUp, this);
+    this.on('pointerupoutside', this.onUp, this);
     this.on('mouseup', this.onUp, this);
     this.on('pointerup', this.onUp, this);
 
-    this.on('touchendoutside', this.onOut, this);
+    this.on('pointerupoutside', this.onOut, this);
     this.on('mouseout', this.onOut, this);
     this.on('pointerout', this.onOut, this);
 };
 
 Button.prototype.onUp = function() {
     this.handleEvent(Button.UP);
-    this.off('touchend', this.onUp, this);
     this.off('mouseupoutside', this.onUp, this);
+    this.off('pointerupoutside', this.onUp, this);
     this.off('mouseup', this.onUp, this);
     this.off('pointerup', this.onUp, this);
 };
 
 Button.prototype.onHover = function() {
     this.handleEvent(Button.HOVER);
-    this.on('touchendoutside', this.onOut, this);
+    this.on('pointerupoutside', this.onOut, this);
     this.on('mouseout', this.onOut, this);
+    this.on('pointerout', this.onOut, this);
 };
 
 Button.prototype.onOut = function() {
     this.handleEvent(Button.OUT);
-    this.off('touchendoutside', this.onOut, this);
+    this.off('pointerupoutside', this.onOut, this);
     this.off('mouseout', this.onOut, this);
     this.off('pointerout', this.onOut, this);
 };
@@ -242,38 +241,38 @@ Button.prototype.handleEvent = function(type) {
             }
         }
     } else {
-      if (type === Button.DOWN) {
-          this.currentState = Button.DOWN;
-          // click / touch DOWN so the button is pressed and the pointer has to
-          // be over the Button
-          this._pressed = true;
-          this._over = true;
-      } else if (type === Button.UP) {
-          this._pressed = false;
+        if (type === Button.DOWN) {
+            this.currentState = Button.DOWN;
+            // click / touch DOWN so the button is pressed and the pointer has to
+            // be over the Button
+            this._pressed = true;
+            this._over = true;
+        } else if (type === Button.UP) {
+            this._pressed = false;
 
-          if (this._over) {
-              // the user taps or clicks the button
-              this.emit(Button.TRIGGERED, this);
-              if (this.theme.hoverSkin) {
-                  this.currentState = Button.HOVER;
-              }
-          } else {
-              // user releases the mouse / touch outside of the button boundaries
-              this.currentState = Button.UP;
-          }
-      } else if (type === Button.HOVER) {
-          this._over = true;
-          if (this._pressed) {
-              this.currentState = Button.DOWN;
-          } else if (this.theme.hoverSkin) {
-              this.currentState = Button.HOVER;
-          }
-      } else  { // type === rollout and default
-          if (this._over) {
-              this._over = false;
-          }
-          this.currentState = Button.UP;
-      }
+            if (this._over) {
+                // the user taps or clicks the button
+                this.emit(Button.TRIGGERED, this);
+                if (this.theme.hoverSkin) {
+                    this.currentState = Button.HOVER;
+                }
+            } else {
+                // user releases the mouse / touch outside of the button boundaries
+                this.currentState = Button.UP;
+            }
+        } else if (type === Button.HOVER) {
+            this._over = true;
+            if (this._pressed) {
+                this.currentState = Button.DOWN;
+            } else if (this.theme.hoverSkin) {
+                this.currentState = Button.HOVER;
+            }
+        } else  { // type === rollout and default
+            if (this._over) {
+                this._over = false;
+            }
+            this.currentState = Button.UP;
+        }
     }
 };
 
