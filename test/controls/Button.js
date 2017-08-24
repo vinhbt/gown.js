@@ -41,7 +41,7 @@ describe("Button", function() {
             expect(btn.currentState).equal(GOWN.Button.UP);
 
             // change button state based on fake events
-            btn.emit('mousedown');
+            btn.emit('pointerdown');
             expect(btn._pressed).equal(true);
             expect(btn.currentState).equal(GOWN.Button.DOWN);
             // fake mouseup
@@ -64,7 +64,7 @@ describe("Button", function() {
         btn.enabled = false;
 
         // handle fake event that will be ignored
-        btn.emit('mousedown');
+        btn.emit('pointerdown');
         expect(btn._pressed).equal(false);
         expect(btn.currentState).equal(Button.UP);
     });

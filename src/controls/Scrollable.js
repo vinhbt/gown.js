@@ -31,13 +31,10 @@ function Scrollable(theme) {
     // # of pixel you scroll at a time (if the event delta is 1 / -1)
     this.scrolldelta = 10;
 
-    this.on('touchstart', this.handleDown, this);
-    this.on('mousedown', this.handleDown, this);
+    this.on('pointerdown', this.handleDown, this);
 
-    this.on('touchend', this.handleUp, this);
-    this.on('touchendoutside', this.handleUp, this);
-    this.on('mouseupoutside', this.handleUp, this);
-    this.on('mouseup', this.handleUp, this);
+    this.on('pointerupoutside', this.handleUp, this);
+    this.on('pointerup', this.handleUp, this);
     this.scrollingFuc = undefined;
     this._isScrolling = false;
     this.thumbFactoryInvalid = true;

@@ -569,23 +569,18 @@ Scroller.prototype.refreshInteractionModeEvents = function () {
     if (!this.startEventsAdded &&
         (this._interactionMode === Scroller.INTERACTION_TOUCH ||
             this._interactionMode === Scroller.INTERACTION_TOUCH_AND_SCROLL_BARS)) {
-        this.on('touchstart', this.onDown, this);
-        this.on('mousedown', this.onDown, this);
+        this.on('pointerdown', this.onDown, this);
         this.startEventsAdded = true;
     } else if (this.startEventsAdded &&
         this._interactionMode === Scroller.INTERACTION_SCROLL_BARS) {
-        this.off('touchstart', this.onDown, this);
-        this.off('mousedown', this.onDown, this);
+        this.off('pointerdown', this.onDown, this);
 
         if (this.touchMoveEventsAdded) {
-            this.off('touchend', this.onUp, this);
-            this.off('mouseupoutside', this.onUp, this);
-            this.off('mouseup', this.onUp, this);
-            this.off('touchendoutside', this.onUp, this);
+            this.off('pointerupoutside', this.onUp, this);
+            this.off('pointerup', this.onUp, this);
 
             // TODO: global move (add events to root element from pixi renderer?)
-            this.off('touchmove', this.onMove, this);
-            this.off('mousemove', this.onMove, this);
+            this.off('pointermove', this.onMove, this);
         }
         this.touchMoveEventsAdded = this.startEventsAdded = false;
     }
@@ -601,13 +596,10 @@ Scroller.prototype.onDown = function (event) {
     }
 
     if (!this.touchMoveEventsAdded) {
-        this.on('touchend', this.onUp, this);
-        this.on('mouseupoutside', this.onUp, this);
-        this.on('mouseup', this.onUp, this);
-        this.on('touchendoutside', this.onUp, this);
+        this.on('pointerupoutside', this.onUp, this);
+        this.on('pointerup', this.onUp, this);
 
-        this.on('touchmove', this.onMove, this);
-        this.on('mousemove', this.onMove, this);
+        this.on('pointermove', this.onMove, this);
         this.touchMoveEventsAdded = true;
     }
 

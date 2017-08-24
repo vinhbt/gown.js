@@ -136,7 +136,7 @@ function InputControl(theme, settings) {
     // TODO: remove events on destroy
     // setup events
     //this.on('touchstart', this.onDown, this);
-    //this.on('mousedown', this.onDown, this);
+    //this.on('pointerdown', this.onDown, this);
 
 }
 

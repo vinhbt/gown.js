@@ -141,8 +141,7 @@ PickerList.prototype.createButton = function() {
         this.height = this.button.height;
     }
 
-    this.button.on('mouseup', this._clickList, this);
-    this.button.on('touchend', this._clickList, this);
+    this.button.on('pointerup', this._clickList, this);
 
     this.addChild(this.button);
 };

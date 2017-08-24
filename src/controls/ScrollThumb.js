@@ -28,16 +28,13 @@ function ScrollThumb(scrollable, theme, skinName) {
     this._isScrolling = false;
     this.scrollingFuc = undefined;
 
-    this.on('mousemove', this.handleMove, this);
     this.on('pointermove', this.handleMove, this);
 
 
     /* jshint unused: false */
-    this.on('mousedown', this.handleDown, this);
     this.on('pointerdown', this.handleDown, this);
     /* jshint unused: false */
 
-    this.on('mouseup', this.handleUp, this);
     this.on('pointerup', this.handleUp, this);
     this.on('pointerupoutside', this.handleUp, this);
 }

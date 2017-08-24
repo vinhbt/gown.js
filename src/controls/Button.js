@@ -22,10 +22,8 @@ function Button(theme, skinName) {
 
     this.handleEvent(Button.UP);
 
-    this.on('mousedown', this.onDown, this);
     this.on('pointerdown', this.onDown, this);
 
-    this.on('mouseover', this.onHover, this);
     this.on('pointerover', this.onHover, this);
     this.on('pointermove', this.onTouchMove, this);
 }
@@ -139,35 +137,27 @@ Button.prototype.skinLoaded = function(skin) {
 
 Button.prototype.onDown = function() {
     this.handleEvent(Button.DOWN);
-    this.on('mouseupoutside', this.onUp, this);
     this.on('pointerupoutside', this.onUp, this);
-    this.on('mouseup', this.onUp, this);
     this.on('pointerup', this.onUp, this);
 
-    this.on('pointerupoutside', this.onOut, this);
-    this.on('mouseout', this.onOut, this);
     this.on('pointerout', this.onOut, this);
 };
 
 Button.prototype.onUp = function() {
     this.handleEvent(Button.UP);
-    this.off('mouseupoutside', this.onUp, this);
     this.off('pointerupoutside', this.onUp, this);
-    this.off('mouseup', this.onUp, this);
     this.off('pointerup', this.onUp, this);
 };
 
 Button.prototype.onHover = function() {
     this.handleEvent(Button.HOVER);
     this.on('pointerupoutside', this.onOut, this);
-    this.on('mouseout', this.onOut, this);
     this.on('pointerout', this.onOut, this);
 };
 
 Button.prototype.onOut = function() {
     this.handleEvent(Button.OUT);
     this.off('pointerupoutside', this.onOut, this);
-    this.off('mouseout', this.onOut, this);
     this.off('pointerout', this.onOut, this);
 };
 

@@ -185,7 +185,7 @@ DropDownList.prototype.createDropDown = function () { //TODO refactoring add con
                         this.handleEvent(DropDownList.HOVER_CONTAINER, i);
                     }.bind(this));
 
-                    background.on('mouseout', function () {
+                    background.on('pointerout', function () {
                         this.handleEvent(DropDownList.NORMAL);
                     }.bind(this));
 
