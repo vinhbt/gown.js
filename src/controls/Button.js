@@ -25,7 +25,7 @@ function Button(theme, skinName) {
     this.on('pointerdown', this.onDown, this);
 
     this.on('pointerover', this.onHover, this);
-    this.on('pointermove', this.onTouchMove, this);
+    // this.on('pointermove', this.onTouchMove, this);
 }
 
 Button.prototype = Object.create( Skinable.prototype );
