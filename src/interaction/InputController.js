@@ -85,30 +85,33 @@ var InputController = {
         _currentItem = undefined;
     },
     fireTab: function () {
+        console.log('fireTab', _currentItem);
         if (_currentItem) {
             var item = InputController.findNextItem();
             if (item){
-                item.focus();
+                item.focus(true);
                 return true;
             }
         }
         return false;
     },
     fireNext: function () {
+        console.log('fireNext', _currentItem);
         if (_currentItem) {
             var item = InputController.findNextItem();
             if (item){
-                item.focus();
+                item.focus(true);
                 return true;
             }
         }
         return false;
     },
     firePrev: function () {
+        console.log('firePrev', _currentItem);
         if (_currentItem) {
             var item = InputController.findPrevItem();
             if (item){
-                item.focus();
+                item.focus(true);
                 return true;
             }
         }

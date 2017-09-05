@@ -26,7 +26,8 @@ function DOMInputWrapper(manager) {
     this._maxChars = 0;
     this.eventsAdded = [];
 }
-DOMInputWrapper.prototype = Object.create( InputWrapper.prototype );
+
+DOMInputWrapper.prototype = Object.create(InputWrapper.prototype);
 DOMInputWrapper.prototype.constructor = DOMInputWrapper;
 module.exports = DOMInputWrapper;
 
@@ -49,7 +50,7 @@ DOMInputWrapper.hiddenInput = {
  * @param type used dom element (input or textarea)
  * @returns {DOMObject}
  */
-DOMInputWrapper.prototype.createInput = function(tagName) {
+DOMInputWrapper.prototype.createInput = function (tagName) {
     this.tagName = tagName;
     if (!DOMInputWrapper.hiddenInput[tagName]) {
         var domInput = document.createElement(tagName);
@@ -65,7 +66,7 @@ DOMInputWrapper.prototype.createInput = function(tagName) {
 /**
  * use CSS style to hide DOM input or textarea
  */
-DOMInputWrapper.prototype.hideInput = function(domInput) {
+DOMInputWrapper.prototype.hideInput = function (domInput) {
     domInput.tabindex = -1;
     domInput.style.position = 'fixed';
     domInput.style.opacity = 0;
@@ -80,8 +81,8 @@ DOMInputWrapper.prototype.hideInput = function(domInput) {
 /**
  * add keyboard events for DOM elements
  */
-DOMInputWrapper.prototype.addEventListener = function(domInput) {
-    if (this.eventsAdded.indexOf(this.tagName) < 0 ) {
+DOMInputWrapper.prototype.addEventListener = function (domInput) {
+    if (this.eventsAdded.indexOf(this.tagName) < 0) {
         this.eventsAdded.push(this.tagName);
         this._onKeyDown = this.onKeyDown.bind(this);
         this._onKeyUp = this.onKeyUp.bind(this);
@@ -97,7 +98,7 @@ DOMInputWrapper.prototype.addEventListener = function(domInput) {
 /**
  * remove keyboard events for DOM elements
  */
-DOMInputWrapper.prototype.removeEventListener = function(domInput) {
+DOMInputWrapper.prototype.removeEventListener = function (domInput) {
     if (this.eventsAdded.indexOf(this.tagName) >= 0) {
         this.eventsAdded.splice(this.eventsAdded.indexOf(this.tagName), 1);
         // add blur handler
@@ -112,13 +113,13 @@ DOMInputWrapper.prototype.removeEventListener = function(domInput) {
     //this.eventsAdded = false;
 };
 
-DOMInputWrapper.prototype.onBlur = function() {
+DOMInputWrapper.prototype.onBlur = function () {
     if (InputControl.currentInput) {
         InputControl.currentInput.onMouseUpOutside();
     }
 };
 
-DOMInputWrapper.prototype.onKeyUp = function(event) {
+DOMInputWrapper.prototype.onKeyUp = function (event) {
     this.manager._keyUpEvent(event);
 };
 
@@ -135,14 +136,37 @@ DOMInputWrapper.prototype.onKeyDown = function (event) {
 DOMInputWrapper.textProp = 'value';
 
 /**
+ * set device for dom input
+ */
+DOMInputWrapper.platform = 'web';
+
+/**
  * activate the dom text input / text area
  * if the InputControl receives the text or not is defined in the focus function
  * of the InputControl itself. There
  */
-DOMInputWrapper.prototype.focus = function(tagName) {
+DOMInputWrapper.prototype.focus = function (tagName, time) {
     this.tagName = tagName;
+    if (typeof (time) == 'undefined') {
+        time = false;
+    }
+
     if (DOMInputWrapper.hiddenInput[this.tagName]) {
-        DOMInputWrapper.hiddenInput[this.tagName].focus();
+        if (DOMInputWrapper.platform == 'iOS') {
+            var that = this;
+            if (time) {
+                setTimeout(function () {
+                    DOMInputWrapper.hiddenInput[that.tagName].focus();
+                }, 200);
+            } else {
+                // setTimeout(function () {
+                //     DOMInputWrapper.hiddenInput[that.tagName].focus();
+                // }, 50);
+                DOMInputWrapper.hiddenInput[that.tagName].focus();
+            }
+        } else {
+            DOMInputWrapper.hiddenInput[this.tagName].focus();
+        }
     }
 };
 
@@ -151,7 +175,7 @@ DOMInputWrapper.prototype.focus = function(tagName) {
  * deactivate the text input
  * blurs ALL hiddenInputs
  */
-DOMInputWrapper.prototype.blur = function() {
+DOMInputWrapper.prototype.blur = function () {
     if (DOMInputWrapper.hiddenInput[this.tagName]) {
         DOMInputWrapper.hiddenInput[this.tagName].blur();
     }
@@ -163,23 +187,23 @@ DOMInputWrapper.prototype.blur = function() {
  * @property text
  * @type String
  */
-Object.defineProperty(DOMInputWrapper.prototype, 'text',{
-    get: function() {
+Object.defineProperty(DOMInputWrapper.prototype, 'text', {
+    get: function () {
         var textProp = DOMInputWrapper.textProp;
         var txt = DOMInputWrapper.hiddenInput[this.tagName][textProp];
         return txt.replace(/\r/g, '');
     },
-    set: function(value) {
+    set: function (value) {
         var textProp = DOMInputWrapper.textProp;
         DOMInputWrapper.hiddenInput[this.tagName][textProp] = value;
     }
 });
 
 
-DOMInputWrapper.prototype.updateSelection = function(start, end) {
+DOMInputWrapper.prototype.updateSelection = function (start, end) {
     if (DOMInputWrapper.hiddenInput[this.tagName].selectionStart !== start ||
         DOMInputWrapper.hiddenInput[this.tagName].selectionEnd !== end) {
-        if(start < end) {
+        if (start < end) {
             DOMInputWrapper.hiddenInput[this.tagName].selectionStart = start;
             DOMInputWrapper.hiddenInput[this.tagName].selectionEnd = end;
         } else {
@@ -187,13 +211,13 @@ DOMInputWrapper.prototype.updateSelection = function(start, end) {
             DOMInputWrapper.hiddenInput[this.tagName].selectionEnd = start;
         }
         return true;
-    } else{
+    } else {
         return false;
     }
 };
 
-Object.defineProperty(DOMInputWrapper.prototype, 'selection',{
-    get: function() {
+Object.defineProperty(DOMInputWrapper.prototype, 'selection', {
+    get: function () {
         return [
             DOMInputWrapper.hiddenInput[this.tagName].selectionStart,
             DOMInputWrapper.hiddenInput[this.tagName].selectionEnd
@@ -207,14 +231,14 @@ Object.defineProperty(DOMInputWrapper.prototype, 'selection',{
  * @property type
  * @type String
  */
-Object.defineProperty(DOMInputWrapper.prototype, 'type',{
-    get: function() {
+Object.defineProperty(DOMInputWrapper.prototype, 'type', {
+    get: function () {
         if (DOMInputWrapper.hiddenInput[this.tagName]) {
             return DOMInputWrapper.hiddenInput[this.tagName].getAttribute('type');
         }
         return 'text';
     },
-    set: function(value) {
+    set: function (value) {
         if (DOMInputWrapper.hiddenInput[this.tagName]) {
             return DOMInputWrapper.hiddenInput[this.tagName].setAttribute('type', value);
         }
@@ -228,9 +252,9 @@ Object.defineProperty(DOMInputWrapper.prototype, 'type',{
  */
 Object.defineProperty(DOMInputWrapper.prototype, 'maxChars', {
     get: function () {
-       return  this._maxChars;
+        return this._maxChars;
     },
-    set: function(value) {
+    set: function (value) {
         if (this._maxChars !== value && DOMInputWrapper.hiddenInput[this.tagName]) {
             this._maxChars = value;
             if (!value || value < 0) {
@@ -248,13 +272,13 @@ Object.defineProperty(DOMInputWrapper.prototype, 'maxChars', {
 DOMInputWrapper.prototype.setCursorPos = function (pos) {
     if (DOMInputWrapper.hiddenInput[this.tagName]) {
         var elem = DOMInputWrapper.hiddenInput[this.tagName];
-        if(elem.createTextRange) {
+        if (elem.createTextRange) {
             var range = elem.createTextRange();
             range.move('character', pos);
             range.select();
         }
         else {
-            if(elem.selectionStart) {
+            if (elem.selectionStart) {
                 elem.focus();
                 elem.setSelectionRange(pos, pos);
             }

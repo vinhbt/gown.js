@@ -484,10 +484,14 @@ InputControl.prototype.textWidth = function(text) {
 InputControl.prototype.inputBaseFocus = InputBase.prototype.focus;
 /**
  * focus on this input and set it as current
- *
+ * @param time // fix to ios platform
  * @method focus
  */
-InputControl.prototype.focus = function () {
+InputControl.prototype.focus = function (time) {
+    if(typeof (time) === 'undefined'){
+        time = false;
+    }
+
     // is already current input
     if (InputControl.currentInput === this) {
         return;
@@ -507,7 +511,7 @@ InputControl.prototype.focus = function () {
     KeyboardManager.wrapper.type = this._inputType;
     this.maxChars = this._maxChars;
     if (this._prevSelection) KeyboardManager.wrapper.updateSelection(this._prevSelection[0], this._prevSelection[1]);
-    KeyboardManager.wrapper.focus(this.wrapperType);
+    KeyboardManager.wrapper.focus(this.wrapperType, time);
     // update cursor position
     if (!this._mouseDown) {
         console.log("focus", this.cursorPos);
