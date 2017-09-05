@@ -1,9 +1,10 @@
 var Skinable = require('./Skinable'),
     InputController = require('../interaction/InputController');
 
-function InputBase(theme, settings) {
+function InputBase(isWeb, theme, settings) {
     settings = settings || {};
     this.stage = null;
+    this.isWeb = isWeb;
     this._useTab = (settings.useTab || true);
     this._hasFocus = settings.hasFocus || false;
     this._mouseDown = false;
@@ -54,6 +55,7 @@ Object.defineProperty(InputBase.prototype, 'enterFunction', {
 
 InputBase.prototype.stageMouseDown = function(e) {
     console.log("stageMouseDown", e);
+
     if(this._hasFocus && !this._mouseDown) {
         console.log("stageMouseDown blur");
         this.blur();
@@ -64,7 +66,7 @@ InputBase.prototype.onMouseUpOutside = function(e) {
     console.log("onMouseUpOutside", this._hasFocus, this._mouseDown);
     this.onUp(e);
     if(this._hasFocus) {
-        this.blur();
+        if(!this.isWeb) this.blur();
     }
 };
 
@@ -162,14 +164,14 @@ InputBase.prototype._bindEvents = function () {
     }
     if (this.stage !== null) {
         this.stage.interactive = true;
-        this.stage.on("pointerdown", this.stageMouseDown, this);
+        if(!this.isWeb) this.stage.on("pointerdown", this.stageMouseDown, this);
         //document.addEventListener("keydown", this.handleKeyDown);
     }
 };
 
 InputBase.prototype._clearEvents = function () {
     if (this.stage !== null) {
-        this.stage.off("pointerdown", this.stageMouseDown, this);
+        if(!this.isWeb) this.stage.off("pointerdown", this.stageMouseDown, this);
         //document.removeEventListener("keydown", this.handleKeyDown);
     }
 };

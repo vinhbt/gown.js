@@ -20,7 +20,7 @@ var Skinable = require('../core/Skinable'),
  * @memberof GOWN
  * @constructor
  */
-function InputControl(theme, settings) {
+function InputControl(isWeb, theme, settings) {
 
     this.settings = settings || {type:'input'};
 
@@ -97,7 +97,7 @@ function InputControl(theme, settings) {
 
     this._prevSelection = KeyboardManager.wrapper.selection;
 
-    InputBase.call(this, theme, settings);
+    InputBase.call(this, isWeb, theme, settings);
 
     //init innerContainer use for mask text.
     this.innerContainer = new PIXI.Container();

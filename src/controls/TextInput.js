@@ -11,11 +11,11 @@ var InputControl = require('./InputControl'),
  * @param theme default theme
  * @constructor
  */
-function TextInput(theme, skinName, options) {
+function TextInput(isWeb, theme, skinName, options) {
     this._validStates = this._validStates || InputControl.stateNames;
     // show and load background image as skin (exploiting skin states)
     this._skinName = skinName || TextInput.SKIN_NAME;
-    InputControl.call(this, theme, options);
+    InputControl.call(this, isWeb, theme, options);
     this._displayAsPassword = false;
 }
 
