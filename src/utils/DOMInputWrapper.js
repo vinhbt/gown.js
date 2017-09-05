@@ -157,7 +157,7 @@ DOMInputWrapper.prototype.focus = function (tagName, time) {
             if (time) {
                 setTimeout(function () {
                     DOMInputWrapper.hiddenInput[that.tagName].focus();
-                }, 200);
+                }, 120);
             } else {
                 // setTimeout(function () {
                 //     DOMInputWrapper.hiddenInput[that.tagName].focus();
