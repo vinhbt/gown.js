@@ -47,7 +47,7 @@ DOMInputWrapper.hiddenInput = {
 
 /**
  * create/return unique input field.
- * @param type used dom element (input or textarea)
+ * @param tagName used dom element (input or textarea)
  * @returns {DOMObject}
  */
 DOMInputWrapper.prototype.createInput = function (tagName) {
@@ -55,6 +55,7 @@ DOMInputWrapper.prototype.createInput = function (tagName) {
     if (!DOMInputWrapper.hiddenInput[tagName]) {
         var domInput = document.createElement(tagName);
         domInput.setAttribute("type", "text");
+        domInput.setAttribute("id", "SDArea");
         domInput.setAttribute("autocapitalize", "none");
         document.body.appendChild(domInput);
         this.hideInput(domInput);
