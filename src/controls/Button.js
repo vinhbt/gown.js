@@ -1,6 +1,8 @@
 var Skinable = require('../core/Skinable');
 
 var ThemeFont = require('../skin/ThemeFont');
+
+var Control = require('../core/Control');
 /**
  * The basic Button with 3 states (up, down and hover) and a label that is
  * centered on it
@@ -203,18 +205,6 @@ Button.prototype.updateDimensions = function() {
     }
 };
 
-Object.defineProperty(Button.prototype, 'enabled', {
-    get: function () {
-        return this._enabled;
-    },
-    set: function (is) {
-        if(this.labelText) this.labelText.interactive = is;
-        this._enabled = this.interactive = is;
-
-        if (!is) this.currentState = Button.DISABLE;
-        else this.currentState = Button.UP;
-    }
-});
 
 /**
  * handle one of the mouse/touch events
@@ -349,6 +339,7 @@ Object.defineProperty(Button.prototype, 'currentState',{
         if (this._currentState === value) {
             return;
         }
+        if(this._validStates === undefined) console.log("this._validStates", this);
         if (this._validStates.indexOf(value) < 0) {
             throw new Error('Invalid state: ' + value + '.');
         }
@@ -374,5 +365,19 @@ Object.defineProperty(Button.prototype, 'label', {
         }
         this._label = label;
         this.updateLabel = true;
+    }
+});
+
+Button.prototype.controlEnabled = Control.prototype.enabled;
+
+Object.defineProperty(Button.prototype, 'enabled', {
+    get: function () {
+        return this.controlEnabled;
+    },
+    set: function (is) {
+        this.controlEnabled = is;
+        this.interactive = this.interactiveChildren = is;
+        if (!is) this.currentState = Button.DISABLE;
+        else this.currentState = Button.UP;
     }
 });

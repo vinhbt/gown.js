@@ -82,7 +82,23 @@ Object.defineProperty(Control.prototype, 'enabled', {
     },
     set: function(value) {
         this._enabled = value;
-        this.interactive = value;
+        this.interactive = this.interactiveChildren = value;
+    }
+});
+
+Control.prototype._visible = PIXI.Container.prototype.visible;
+
+Object.defineProperty(Control.prototype, 'visible', {
+    get: function() {
+        return this._visible;
+    },
+    set: function(value) {
+        this._visible = value;
+        if(!value){
+            this.interactive = this.interactiveChildren = false;
+        }else if(this._enabled) {
+            this.interactive = this.interactiveChildren = true;
+        }
     }
 });
 
