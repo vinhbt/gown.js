@@ -55,7 +55,6 @@ DOMInputWrapper.prototype.createInput = function (tagName) {
     if (!DOMInputWrapper.hiddenInput[tagName]) {
         var domInput = document.createElement(tagName);
         domInput.setAttribute("type", "text");
-        domInput.setAttribute("id", "SDArea");
         domInput.setAttribute("autocapitalize", "none");
         document.body.appendChild(domInput);
         this.hideInput(domInput);
@@ -146,30 +145,10 @@ DOMInputWrapper.platform = 'web';
  * if the InputControl receives the text or not is defined in the focus function
  * of the InputControl itself. There
  */
-DOMInputWrapper.prototype.focus = function (tagName, time) {
+DOMInputWrapper.prototype.focus = function (tagName) {
     this.tagName = tagName;
-    if (typeof time === 'undefined') {
-        time = false;
-    }
-
     if (DOMInputWrapper.hiddenInput[this.tagName]) {
-        if (DOMInputWrapper.platform === 'iOS') {
-            var that = this;
-            if (time) {
-                setTimeout(function () {
-                    console.log('-----', DOMInputWrapper.hiddenInput[that.tagName]);
-                    // DOMInputWrapper.hiddenInput[that.tagName].focus();
-                    document.getElementById('SDArea').focus();
-                }, 2000);
-            } else {
-                // setTimeout(function () {
-                //     DOMInputWrapper.hiddenInput[that.tagName].focus();
-                // }, 50);
-                DOMInputWrapper.hiddenInput[that.tagName].focus();
-            }
-        } else {
-            DOMInputWrapper.hiddenInput[this.tagName].focus();
-        }
+        DOMInputWrapper.hiddenInput[this.tagName].focus();
     }
 };
 

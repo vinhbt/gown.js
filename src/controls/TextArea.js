@@ -18,7 +18,7 @@ function TextArea(isWeb, theme, skinName) {
     this._validStates = this._validStates || InputControl.stateNames;
     // show and load background image as skin (exploiting skin states)
     this._skinName = skinName || TextArea.SKIN_NAME;
-    InputControl.call(this, isWeb, theme, {type: 'textarea', mode: "textarea"});
+    InputControl.call(this, isWeb, theme, {type: 'input', mode: "textarea"});
 
     // this._fromPos = this.textOffset.clone();
     // this._toPos = this.textOffset.clone();

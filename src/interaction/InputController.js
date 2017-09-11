@@ -100,7 +100,7 @@ var InputController = {
         if (_currentItem) {
             var item = InputController.findNextItem();
             if (item){
-                item.focus(true);
+                item.focus();
                 return true;
             }
         }
@@ -111,7 +111,7 @@ var InputController = {
         if (_currentItem) {
             var item = InputController.findPrevItem();
             if (item){
-                item.focus(true);
+                item.focus();
                 return true;
             }
         }

@@ -511,7 +511,7 @@ InputControl.prototype.focus = function (time) {
     KeyboardManager.wrapper.type = this._inputType;
     this.maxChars = this._maxChars;
     if (this._prevSelection) KeyboardManager.wrapper.updateSelection(this._prevSelection[0], this._prevSelection[1]);
-    KeyboardManager.wrapper.focus(this.wrapperType, time);
+    KeyboardManager.wrapper.focus(this.wrapperType);
     // update cursor position
     if (!this._mouseDown) {
         console.log("focus", this.cursorPos);
