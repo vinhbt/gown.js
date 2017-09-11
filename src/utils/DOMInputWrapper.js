@@ -148,17 +148,19 @@ DOMInputWrapper.platform = 'web';
  */
 DOMInputWrapper.prototype.focus = function (tagName, time) {
     this.tagName = tagName;
-    if (typeof (time) == 'undefined') {
+    if (typeof time === 'undefined') {
         time = false;
     }
 
     if (DOMInputWrapper.hiddenInput[this.tagName]) {
-        if (DOMInputWrapper.platform == 'iOS') {
+        if (DOMInputWrapper.platform === 'iOS') {
             var that = this;
             if (time) {
                 setTimeout(function () {
-                    DOMInputWrapper.hiddenInput[that.tagName].focus();
-                }, 120);
+                    console.log('-----', DOMInputWrapper.hiddenInput[that.tagName]);
+                    // DOMInputWrapper.hiddenInput[that.tagName].focus();
+                    document.getElementById('SDArea').focus();
+                }, 2000);
             } else {
                 // setTimeout(function () {
                 //     DOMInputWrapper.hiddenInput[that.tagName].focus();

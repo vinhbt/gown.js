@@ -488,7 +488,7 @@ InputControl.prototype.inputBaseFocus = InputBase.prototype.focus;
  * @method focus
  */
 InputControl.prototype.focus = function (time) {
-    if(typeof (time) === 'undefined'){
+    if(typeof time === 'undefined'){
         time = false;
     }
 
