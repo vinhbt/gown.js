@@ -83,6 +83,7 @@ Object.defineProperty(Control.prototype, 'enabled', {
     set: function(value) {
         this._enabled = value;
         this.interactive = this.interactiveChildren = value;
+        this.alpha = this._enabled ? 1 : 0.5
     }
 });
 

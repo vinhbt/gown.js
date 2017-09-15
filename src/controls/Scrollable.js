@@ -543,8 +543,11 @@ Object.defineProperty(Scrollable.prototype, 'enabled', {
     set: function(value) {
         this._enabled = value;
         this.interactive = value;
+        const DimAlpha = 0.5
+        this.alpha = this._enabled ? 1 : DimAlpha
         if(this.thumb){
             this.thumb.interactive = value;
+            this.thumb.alpha = this._enabled ? 1 : DimAlpha
         }
     }
 });
