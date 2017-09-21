@@ -25,7 +25,7 @@ var InputController = {
     },
     remove: function (groupName) {
         var items = tabGroups[groupName];
-        if (!items) {
+        if (items) {
             if (_currentItem && items.indexOf(_currentItem) > 0){
                 _currentItem = undefined;
             }
