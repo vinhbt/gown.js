@@ -368,15 +368,15 @@ Object.defineProperty(Button.prototype, 'label', {
     }
 });
 
-Button.prototype.controlEnabled = Control.prototype.enabled;
 
 Object.defineProperty(Button.prototype, 'enabled', {
     get: function () {
-        return this.controlEnabled;
+        return this._enabled;
     },
     set: function (is) {
-        this.controlEnabled = is;
+        this._enabled = is;
         this.interactive = this.interactiveChildren = is;
+        this.alpha = this._enabled ? 1 : 0.5;
         if (!is) this.currentState = Button.DISABLE;
         else this.currentState = Button.UP;
     }
