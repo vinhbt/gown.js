@@ -121,6 +121,7 @@ TextArea.prototype._drawSelectionBg = function (fromTextPos, toTextPos) {
 };
 
 TextArea.prototype.getLines = function() {
-    var wrappedText = this.pixiText.wordWrap(this.text);
+    var style = this.pixiText ? this.pixiText.style : this.style;
+    var wrappedText = PIXI.TextMetrics.wordWrap(this.text, style);
     return wrappedText.split(/(?:\r\n|\r|\n)/);
 };

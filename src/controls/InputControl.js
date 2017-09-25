@@ -668,7 +668,8 @@ InputControl.prototype.onUp = function (e) {
 InputControl.prototype.textToPixelPos = function(textPos, position) {
     var lines = this.getLines();
     if(this.settings.mode === 'textarea'){
-        var wrappedText = this.pixiText.wordWrap(this.text);
+        var style = this.pixiText ? this.pixiText.style : this.style;
+        var wrappedText = PIXI.TextMetrics.wordWrap(this.text, style);
         if(wrappedText.length > this.text.length){
             textPos += (wrappedText.length - this.text.length);
         }
@@ -713,7 +714,8 @@ InputControl.prototype.pixelToTextPos = function(pixelPos) {
     var textPos = 0;
     var lines = this.getLines();
     if(this.settings.mode === 'textarea'){
-        var wrappedText = this.pixiText.wordWrap(this.text);
+        var style = this.pixiText ? this.pixiText.style : this.style;
+        var wrappedText = PIXI.TextMetrics.wordWrap(this.text, style);
         if(wrappedText.length > this.text.length){
             textPos -= (wrappedText.length - this.text.length);
         }
