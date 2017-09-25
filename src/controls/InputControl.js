@@ -547,7 +547,7 @@ InputControl.prototype.blur = function() {
  */
 InputControl.prototype.lineHeight = function() {
     var style = this.pixiText ? this.pixiText.style : this.style;
-    var fontSize =  this.pixiText ? PIXI.Text.calculateFontProperties(this.pixiText._font).fontSize : style.fontSize;
+    var fontSize = this.pixiText ? PIXI.TextMetrics.measureFont(this.pixiText._font).fontSize : style.fontSize;
     var strokeThickness = style.strokeThickness || 0;
     var lineHeight = style.lineHeight || fontSize + strokeThickness;
     if(this.pixiText && this.settings.mode !== 'textarea') {
