@@ -76,6 +76,9 @@ DOMInputWrapper.prototype.hideInput = function (domInput) {
     domInput.style.left = '-100px';
     domInput.style.top = '-100px';
     domInput.style.zIndex = 10;
+
+    // domInput.style.position = 'fixed';
+    // domInput.style.zIndex = 99999999999999;
 };
 
 /**
@@ -148,7 +151,10 @@ DOMInputWrapper.platform = 'web';
 DOMInputWrapper.prototype.focus = function (tagName) {
     this.tagName = tagName;
     if (DOMInputWrapper.hiddenInput[this.tagName]) {
-        DOMInputWrapper.hiddenInput[this.tagName].focus();
+        var _this = this;
+        setTimeout(function (args) {
+            DOMInputWrapper.hiddenInput[_this.tagName].focus();
+        }, 20)
     }
 };
 

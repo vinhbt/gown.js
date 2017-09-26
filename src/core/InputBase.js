@@ -14,7 +14,7 @@ function InputBase(isWeb, theme, settings) {
 
     Skinable.call(this, theme);
 
-    this.on("pointerdown", this.onDown, this);
+    this.on("pointerup", this.onDown, this);
 
     this.on("pointerupoutside", this.onMouseUpOutside, this);
 
@@ -54,9 +54,9 @@ Object.defineProperty(InputBase.prototype, 'enterFunction', {
 });
 
 InputBase.prototype.stageMouseDown = function(e) {
-    console.log("stageMouseDown", e);
+    console.log("stageMouseDown", e, 'this._hasFocus: ' + this._hasFocus, 'this._mouseDown: ' + this._mouseDown);
 
-    if(this._hasFocus && !this._mouseDown) {
+    if(this._hasFocus && this._mouseDown) {
         console.log("stageMouseDown blur");
         this.blur();
     }
@@ -96,8 +96,8 @@ InputBase.prototype.onMouseUpOutside = function(e) {
 InputBase.prototype.onDown = function(e) {
     this._mouseDown = true;
     console.log('onDown');
-    this.on("pointerup", this.onUp, this);
-    this.on("pointermove", this.onMove, this);
+    // this.on("pointerup", this.onUp, this);
+    // this.on("pointermove", this.onMove, this);
     this.focus();
     if (e) e.data.originalEvent.preventDefault();
 };
@@ -107,8 +107,8 @@ InputBase.prototype.onMove = function(e) {
 
 InputBase.prototype.onUp = function(e) {
     console.log("onUp");
-    this.off("pointerup", this.onUp, this);
-    this.off("pointermove", this.onMove, this);
+    // this.off("pointerup", this.onUp, this);
+    // this.off("pointermove", this.onMove, this);
     this._mouseDown = false;
 };
 

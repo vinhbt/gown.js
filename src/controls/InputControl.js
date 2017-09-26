@@ -22,7 +22,7 @@ var Skinable = require('../core/Skinable'),
  */
 function InputControl(isWeb, theme, settings) {
 
-    this.settings = settings || {type:'input'};
+    this.settings = settings || {type: 'input'};
 
     this.receiveKeys = true;
 
@@ -85,7 +85,7 @@ function InputControl(isWeb, theme, settings) {
 
     this._pattern = this.settings.pattern || '';
 
-    this._patternReg = RegExp(this._pattern);
+    this._patternReg = new RegExp(this._pattern);
 
     // create dom element for DOMInputWrapper
     // (not needed if we run inside cordova/cocoon)
@@ -140,7 +140,7 @@ function InputControl(isWeb, theme, settings) {
 
 }
 
-InputControl.prototype = Object.create( InputBase.prototype );
+InputControl.prototype = Object.create(InputBase.prototype);
 InputControl.prototype.constructor = InputControl;
 module.exports = InputControl;
 
@@ -216,7 +216,7 @@ InputControl.prototype.onKeyDown = function () {
 
 };
 
-InputControl.prototype.addEvents = function() {
+InputControl.prototype.addEvents = function () {
     this.on('keyup', this.inputChangeEvent);
     this.on('keydown', this.inputChangeEvent);
 };
@@ -229,7 +229,7 @@ InputControl.prototype.onInputChanged = function () {
     var text = KeyboardManager.wrapper.text;
 
     //overrides the current text with the user input from the InputWrapper
-    if(text !== this.text ) {
+    if (text !== this.text) {
         if (this._pattern.length > 0) {
             if (text === '' || this._patternReg.test(text)) {
                 this.text = text;
@@ -238,7 +238,7 @@ InputControl.prototype.onInputChanged = function () {
                 KeyboardManager.wrapper.text = this.value;
                 KeyboardManager.wrapper.updateSelection(this._prevSelection[0], this._prevSelection[1]);
             }
-        }else{
+        } else {
             this.text = text;
             this._prevSelection = KeyboardManager.wrapper.selection;
         }
@@ -247,7 +247,7 @@ InputControl.prototype.onInputChanged = function () {
     this.setCursorPos();
 };
 
-InputControl.prototype.initCursor = function() {
+InputControl.prototype.initCursor = function () {
     if (this.cursorView) {
         this.cursorView.clear();
         this.cursorView._index = 0;
@@ -291,7 +291,7 @@ InputControl.prototype.refreshMask = function () {
     this.innerContainer.mask.lineTo(0, 0);
     this.innerContainer.mask.endFill();
 
-    if (this.settings.mode === 'textarea' && this.pixiText){
+    if (this.settings.mode === 'textarea' && this.pixiText) {
         this.pixiText.style.wordWrapWidth = clipWidth - this.cursorView.width;
         this.pixiText.style.breakWords = true;
     }
@@ -309,8 +309,8 @@ InputControl.prototype.setCursorPos = function () {
             this.pixiText.position.x -= delta - this.cursorView.width / 2;
             this.cursorView.position.x -= delta;
         } else if (this.cursorView.position.x < 0) {
-            this.pixiText.position.x = this.pixiText.position.x - this.cursorView.position.x - this.cursorView.width/2;
-            this.cursorView.position.x = this.cursorView.width/2;
+            this.pixiText.position.x = this.pixiText.position.x - this.cursorView.position.x - this.cursorView.width / 2;
+            this.cursorView.position.x = this.cursorView.width / 2;
         } else if (this.pixiText.position.x < 0
             && this.pixiText.position.x + this.textWidth(this.text) <= this.innerContainer.mask.width - this.cursorView.width) {
             var newX = this.innerContainer.mask.width - this.cursorView.width - this.textWidth(this.text);
@@ -329,7 +329,7 @@ InputControl.prototype.skinableSetTheme = Skinable.prototype.setTheme;
  * @method setTheme
  * @param theme the new theme {Theme}
  */
-InputControl.prototype.setTheme = function(theme) {
+InputControl.prototype.setTheme = function (theme) {
     if (theme === this.theme || !theme) {
         return;
     }
@@ -338,33 +338,33 @@ InputControl.prototype.setTheme = function(theme) {
     this.style = theme.textStyle;
 };
 
-InputControl.prototype.setPixiText = function(text) {
+InputControl.prototype.setPixiText = function (text) {
     this._displayText = text || '';
-    if (this._displayText.length === 0 && this._placeHolder.length > 0){
+    if (this._displayText.length === 0 && this._placeHolder.length > 0) {
         this._displayText = this._placeHolder;
         this._displayAsPlaceHolder = true;
-    }else{
+    } else {
         this._displayAsPlaceHolder = false;
     }
     if (!this.pixiText) {
-        if (this.innerContainer){
+        if (this.innerContainer) {
             this.pixiText = new PIXI.Text(this._displayText, this._displayAsPlaceHolder ? this._placeHolderStyle : this.textStyle);
-            if (this.settings.mode === 'textarea' && this.innerContainer.mask){
-                if (this.textStyle){
+            if (this.settings.mode === 'textarea' && this.innerContainer.mask) {
+                if (this.textStyle) {
                     this.textStyle.wordWrapWidth = this.innerContainer.mask.width - this.cursorView.width;
                     this.textStyle.breakWords = true;
                 }
                 this.pixiText.style.wordWrapWidth = this.innerContainer.mask.width - this.cursorView.width;
                 this.pixiText.style.breakWords = true;
             }
-            this.pixiText.position = new PIXI.Point(0,0);
+            this.pixiText.position = new PIXI.Point(0, 0);
             this.innerContainer.addChild(this.pixiText);
         }
     } else {
         this.pixiText.text = this._displayText;
-        if (this._displayAsPlaceHolder){
+        if (this._displayAsPlaceHolder) {
             this.pixiText.style = this._placeHolderStyle;
-        }else{
+        } else {
             this.pixiText.style = this.textStyle;
         }
     }
@@ -403,8 +403,8 @@ Object.defineProperty(InputControl.prototype, 'text', {
         }
         this._origText = text;
         this.setPixiText(text);
-        if (KeyboardManager.wrapper.text !== text){
-            if (this.cursorPos > text.length){
+        if (KeyboardManager.wrapper.text !== text) {
+            if (this.cursorPos > text.length) {
                 this.cursorPos = text.length;
                 KeyboardManager.wrapper.setCursorPos(this.cursorPos);
             }
@@ -443,7 +443,7 @@ Object.defineProperty(InputControl.prototype, 'maxChars', {
 });
 
 Object.defineProperty(InputControl.prototype, 'value', {
-    get: function() {
+    get: function () {
         return this._origText;
     }
 });
@@ -455,7 +455,7 @@ Object.defineProperty(InputControl.prototype, 'value', {
  * @param text
  * @returns {*}
  */
-InputControl.prototype.textWidth = function(text) {
+InputControl.prototype.textWidth = function (text) {
     // TODO: support BitmapText for PIXI v3+
     if (!this.text._isBitmapFont) {
         var ctx = this.pixiText.context;
@@ -488,7 +488,7 @@ InputControl.prototype.inputBaseFocus = InputBase.prototype.focus;
  * @method focus
  */
 InputControl.prototype.focus = function (time) {
-    if(typeof time === 'undefined'){
+    if (typeof time === 'undefined') {
         time = false;
     }
 
@@ -529,7 +529,7 @@ InputControl.prototype.inputBaseBlur = InputBase.prototype.blur;
  *
  * @method blur
  */
-InputControl.prototype.blur = function() {
+InputControl.prototype.blur = function () {
     if (InputControl.currentInput === this) {
         this._prevSelection = KeyboardManager.wrapper.selection;
         InputControl.currentInput = null;
@@ -545,14 +545,14 @@ InputControl.prototype.blur = function() {
  * height of the line in pixel
  * (assume that every character of pixi text has the same line height)
  */
-InputControl.prototype.lineHeight = function() {
+InputControl.prototype.lineHeight = function () {
     var style = this.pixiText ? this.pixiText.style : this.style;
     var fontSize = this.pixiText ? PIXI.TextMetrics.measureFont(this.pixiText._font).fontSize : style.fontSize;
     var strokeThickness = style.strokeThickness || 0;
     var lineHeight = style.lineHeight || fontSize + strokeThickness;
-    if(this.pixiText && this.settings.mode !== 'textarea') {
+    if (this.pixiText && this.settings.mode !== 'textarea') {
         return Math.max(lineHeight, this.pixiText.height);
-    }else if(this.pixiText && this.settings.mode === 'textarea'){
+    } else if (this.pixiText && this.settings.mode === 'textarea') {
         this.tmp.style = this.pixiText.style;
         lineHeight = this.tmp.height;
     }
@@ -596,9 +596,9 @@ InputControl.prototype.onMove = function (e) {
         return false;
     }
 
-    var curPos = this.pixelToTextPos(mouse),
-        start = KeyboardManager.wrapper.selectionStart;
-    var end = curPos;
+    var curPos = this.pixelToTextPos(mouse)
+        , start = KeyboardManager.wrapper.selectionStart
+        , end = curPos;
 
     if (KeyboardManager.wrapper.updateSelection(start, end)) {
         this._cursorNeedsUpdate = true;
@@ -666,12 +666,12 @@ InputControl.prototype.onUp = function (e) {
  * @param textPos current character position in the text
  * @returns {Point} pixel position
  */
-InputControl.prototype.textToPixelPos = function(textPos, position) {
+InputControl.prototype.textToPixelPos = function (textPos, position) {
     var lines = this.getLines();
-    if(this.settings.mode === 'textarea'){
+    if (this.settings.mode === 'textarea') {
         var style = this.pixiText ? this.pixiText.style : this.style;
         var wrappedText = PIXI.TextMetrics.wordWrap(this.text, style);
-        if(wrappedText.length > this.text.length){
+        if (wrappedText.length > this.text.length) {
             textPos += (wrappedText.length - this.text.length);
         }
     }
@@ -693,9 +693,9 @@ InputControl.prototype.textToPixelPos = function(textPos, position) {
         position.x = x;
         position.y = y * this.lineHeight();
     }
-    if(this.settings.mode !== 'textarea'){
+    if (this.settings.mode !== 'textarea') {
         position.x += this.pixiText.position.x - this.cursorView.width / 2;
-    }else {
+    } else {
         position.x += this.pixiText.position.x;
     }
     position.y += this.pixiText.position.y;
@@ -711,13 +711,13 @@ InputControl.prototype.textToPixelPos = function(textPos, position) {
  * @param mousePos position of the mouse on the PIXI Text
  * @returns {Number} position in the text
  */
-InputControl.prototype.pixelToTextPos = function(pixelPos) {
+InputControl.prototype.pixelToTextPos = function (pixelPos) {
     var textPos = 0;
     var lines = this.getLines();
-    if(this.settings.mode === 'textarea'){
+    if (this.settings.mode === 'textarea') {
         var style = this.pixiText ? this.pixiText.style : this.style;
         var wrappedText = PIXI.TextMetrics.wordWrap(this.text, style);
-        if(wrappedText.length > this.text.length){
+        if (wrappedText.length > this.text.length) {
             textPos -= (wrappedText.length - this.text.length);
         }
     }
@@ -759,10 +759,10 @@ InputControl.prototype.redraw = function () {
         this.updateSelectionBg();
     }
 
-    if (this.clippingInvalid){
+    if (this.clippingInvalid) {
         this.refreshMask();
-        if(this.settings.mode !== 'textarea'){
-            this.innerContainer.y = this.height/2 - this.innerContainer.height/2;
+        if (this.settings.mode !== 'textarea') {
+            this.innerContainer.y = this.height / 2 - this.innerContainer.height / 2;
         }
     }
     this.redrawSkinable();
@@ -772,10 +772,10 @@ InputControl.prototype.redraw = function () {
  * set text style (size, font etc.) for text and cursor
  */
 Object.defineProperty(InputControl.prototype, 'style', {
-    get: function() {
+    get: function () {
         return this.textStyle;
     },
-    set: function(style) {
+    set: function (style) {
         this.textStyle = style;
         if (this.pixiText) {
             this.pixiText.style = style;
@@ -812,11 +812,11 @@ Object.defineProperty(InputControl.prototype, 'colorCursor', {
  * @property currentState
  * @type String
  */
-Object.defineProperty(InputControl.prototype, 'currentState',{
-    get: function() {
+Object.defineProperty(InputControl.prototype, 'currentState', {
+    get: function () {
         return this._currentState;
     },
-    set: function(value) {
+    set: function (value) {
         if (this._currentState === value) {
             return;
         }
@@ -830,20 +830,20 @@ Object.defineProperty(InputControl.prototype, 'currentState',{
 });
 
 
-Object.defineProperty(InputControl.prototype, 'offsetKeyBoard',{
-    get: function() {
+Object.defineProperty(InputControl.prototype, 'offsetKeyBoard', {
+    get: function () {
         return this._offsetKeyBoard;
     },
-    set: function(value) {
+    set: function (value) {
         this._offsetKeyBoard = value;
     }
 });
 
-InputControl.prototype.adjustScrollY = function(screenHeight, keyboardHeight) {
-    var global = this.toGlobal(this.cursorView ? this.cursorView.position : new Point(0,0));
-    if (global.y + this.height > screenHeight - keyboardHeight - this.offsetKeyBoard){
-        return -Math.min(screenHeight - (global.y + this.height + keyboardHeight + this.offsetKeyBoard) , screenHeight - keyboardHeight);
-    }else {
+InputControl.prototype.adjustScrollY = function (screenHeight, keyboardHeight) {
+    var global = this.toGlobal(this.cursorView ? this.cursorView.position : new Point(0, 0));
+    if (global.y + this.height > screenHeight - keyboardHeight - this.offsetKeyBoard) {
+        return -Math.min(screenHeight - (global.y + this.height + keyboardHeight + this.offsetKeyBoard), screenHeight - keyboardHeight);
+    } else {
         return 0;
     }
 };
