@@ -99,7 +99,7 @@ InputBase.prototype.onDown = function(e) {
     this.on("pointerup", this.onUp, this);
     this.on("pointermove", this.onMove, this);
     this.focus();
-
+    if (e) e.data.originalEvent.preventDefault();
 };
 
 InputBase.prototype.onMove = function(e) {

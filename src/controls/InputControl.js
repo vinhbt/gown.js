@@ -623,6 +623,7 @@ InputControl.prototype.onDown = function (e) {
         originalEvent.preventDefault();
         return false;
     }
+    this.inPutBaseOnDown(e);
     // start the selection drag if inside the input
     // TODO: move to wrapper
     KeyboardManager.wrapper.selectionStart = this.pixelToTextPos(mouse);
@@ -634,7 +635,7 @@ InputControl.prototype.onDown = function (e) {
     this.cursorPos = KeyboardManager.wrapper.selectionStart;
     this.setCursorPos();
     this._cursorNeedsUpdate = true;
-    this.inPutBaseOnDown();
+
     return true;
 };
 
