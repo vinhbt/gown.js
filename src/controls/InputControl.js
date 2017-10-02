@@ -484,17 +484,12 @@ InputControl.prototype.textWidth = function (text) {
 InputControl.prototype.inputBaseFocus = InputBase.prototype.focus;
 /**
  * focus on this input and set it as current
- * @param time // fix to ios platform
  * @method focus
  */
-InputControl.prototype.focus = function (time) {
-    if (typeof time === 'undefined') {
-        time = false;
-    }
-
+InputControl.prototype.focus = function () {
     // is already current input
     if (InputControl.currentInput === this) {
-        return;
+        // return;
     }
 
     // drop focus

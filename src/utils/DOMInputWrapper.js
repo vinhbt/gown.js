@@ -154,7 +154,7 @@ DOMInputWrapper.prototype.focus = function (tagName) {
         var _this = this;
         setTimeout(function (args) {
             DOMInputWrapper.hiddenInput[_this.tagName].focus();
-        }, 20)
+        }, 150)
     }
 };
 
@@ -258,6 +258,7 @@ Object.defineProperty(DOMInputWrapper.prototype, 'maxChars', {
  * set cursor position of the hidden input
  */
 DOMInputWrapper.prototype.setCursorPos = function (pos) {
+    console.log('DOMInputWrapper->setCursorPos', pos);
     if (DOMInputWrapper.hiddenInput[this.tagName]) {
         var elem = DOMInputWrapper.hiddenInput[this.tagName];
         if (elem.createTextRange) {

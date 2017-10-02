@@ -113,6 +113,7 @@ InputBase.prototype.onUp = function(e) {
 };
 
 InputBase.prototype.focus = function () {
+    console.log('InputBase.focus');
     if (!this._hasFocus) {
         this._hasFocus = true;
         this._bindEvents();
